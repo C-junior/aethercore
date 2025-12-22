@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/archer_awaken.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "kyuubi_t3"
+display_name = "Kyuubi"
+description = "Nine tails blaze with celestial fire. The legendary fox spirit has fully awakened."
+portrait = ExtResource("2")
+element = 0
+tier = 3
+base_hp = 180
+base_attack = 28
+attack_speed = 1.2
+damage_reduction = 0
+xp_to_evolve = 999
+evolves_into = null
+ability_name = "Explosão Solar"
+ability_description = "When killing an enemy, deals 50% ATK damage to all other enemies."
+ability_type = 6
+ability_params = {
+"on_kill_aoe": true,
+"aoe_damage_percent": 0.5,
+"budget_value": 38.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(1, 0.6, 0, 1)
+animation_set = "fire_ultimate"

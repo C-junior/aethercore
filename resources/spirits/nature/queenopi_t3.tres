@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/druid.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "queenopi_t3"
+display_name = "Queenopi"
+description = "The Royal Monarch of the hive. Even in death, her loyal subjects fight on."
+portrait = ExtResource("2")
+element = 4
+tier = 3
+base_hp = 200
+base_attack = 15
+attack_speed = 1.1
+damage_reduction = 0
+xp_to_evolve = 999
+evolves_into = null
+ability_name = "Enxame Real"
+ability_description = "On death, spawns 2 Beezu (T1) to continue fighting."
+ability_type = 5
+ability_params = {
+"spawn_on_death": "res://resources/spirits/nature/beezu_t1.tres",
+"spawn_count": 2,
+"budget_value": 53.0
+}
+targeting_mode = 0
+is_ranged = true
+effect_color = Color(0.9, 0.85, 0, 1)
+animation_set = "nature_ultimate"

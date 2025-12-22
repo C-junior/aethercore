@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/enemies/goblin_boss.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "queenstruction"
+display_name = "Queenstruction"
+description = "A colossal insectoid queen. Her Royal Guard reduces damage from lowly T1 spirits."
+portrait = ExtResource("2")
+element = 4
+tier = 3
+base_hp = 400
+base_attack = 25
+attack_speed = 0.6
+damage_reduction = 0
+xp_to_evolve = 999
+evolves_into = null
+ability_name = "Royal Guard"
+ability_description = "Takes 50% less damage from T1 spirits. Every 10s summons a Beezu. Every 3rd attack is Crushing Mandible (40 dmg, pierces 50% shield)."
+ability_type = 0
+ability_params = {
+"t1_damage_reduction": 0.5,
+"swarm_cooldown": 10.0,
+"swarm_spawn": "res://resources/spirits/nature/beezu_t1.tres",
+"mandible_every": 3,
+"mandible_damage": 40,
+"budget_value": 100.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0.3, 0.5, 0.1, 1)
+animation_set = "boss"

@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/berserker.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "megalana_t3"
+display_name = "Megalana"
+description = "Alpha of the tides. She rides waves of destruction, pushing enemies into chaos."
+portrait = ExtResource("2")
+element = 1
+tier = 3
+base_hp = 240
+base_attack = 20
+attack_speed = 1.1
+damage_reduction = 0
+xp_to_evolve = 999
+evolves_into = null
+ability_name = "Tsunami"
+ability_description = "Every 8 seconds, deals 80 damage and pushes 1 enemy to back row."
+ability_type = 3
+ability_params = {
+"cooldown": 8.0,
+"damage": 80,
+"push_to_back": true,
+"budget_value": 44.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0, 0.4, 0.8, 1)
+animation_set = "water_ultimate"

@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="MapData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/map_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+act_number = 3
+display_name = "Act 3: Aether Nexus"
+description = "The heart of the spirit realm. All elements converge at the source of Aether energy."
+floor_count = 13
+boss_id = "aether_guardian"
+nodes_per_floor = Vector2i(3, 5)
+battle_weight = 0.35
+elite_weight = 0.20
+shop_weight = 0.12
+camp_weight = 0.12
+treasure_weight = 0.10
+event_weight = 0.11
+available_elements = [0, 1, 2, 3, 4]
+base_hp_multiplier = 1.6
+base_atk_multiplier = 1.5
+floor_hp_scaling = 0.12
+floor_atk_scaling = 0.10
+elite_floors = [3, 5, 7, 9, 11]
+guaranteed_shop_floors = [4, 8, 12]
+pre_boss_floor_type = 4
+base_gold_reward = 18
+gold_per_floor = 4
+base_xp_reward = 60

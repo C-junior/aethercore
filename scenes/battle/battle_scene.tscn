@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3 uid="uid://cw6epmoi5mon6"]
+
+[ext_resource type="Script" uid="uid://cevw1koy1o8ll" path="res://scripts/grid/battle_grid.gd" id="1"]
+[ext_resource type="Script" uid="uid://c560ifvwjcu57" path="res://scripts/battle/battle_manager.gd" id="2"]
+
+[node name="BattleScene" type="Node2D"]
+
+[node name="Background" type="Sprite2D" parent="."]
+z_index = -10
+
+[node name="BattleManager" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="AllyGrid" type="Node2D" parent="."]
+position = Vector2(200, 300)
+script = ExtResource("1")
+
+[node name="EnemyGrid" type="Node2D" parent="."]
+position = Vector2(600, 300)
+script = ExtResource("1")
+is_ally_grid = false
+
+[node name="BattleTimer" type="Label" parent="."]
+offset_left = 350.0
+offset_top = 20.0
+offset_right = 450.0
+offset_bottom = 50.0
+text = "60.0"
+horizontal_alignment = 1
+
+[node name="VersusLabel" type="Label" parent="."]
+offset_left = 350.0
+offset_top = 280.0
+offset_right = 450.0
+offset_bottom = 320.0
+text = "VS"
+horizontal_alignment = 1
+vertical_alignment = 1

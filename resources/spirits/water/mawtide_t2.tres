@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/berserker.png" id="2"]
+[ext_resource type="Resource" path="res://resources/spirits/water/megalana_t3.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "mawtide_t2"
+display_name = "Mawtide"
+description = "Coral armor encases the shark warrior. Her bites heal her wounds."
+portrait = ExtResource("2")
+element = 1
+tier = 2
+base_hp = 160
+base_attack = 14
+attack_speed = 1.0
+damage_reduction = 0
+xp_to_evolve = 250
+evolves_into = ExtResource("3")
+ability_name = "Mordida"
+ability_description = "Every 4th attack heals self for 20 HP."
+ability_type = 1
+ability_params = {
+"trigger_every": 4,
+"heal_amount": 20,
+"budget_value": 20.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0.1, 0.5, 0.9, 1)
+animation_set = "water_evolved"

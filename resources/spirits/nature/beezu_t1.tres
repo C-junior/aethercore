@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/cleric.png" id="2"]
+[ext_resource type="Resource" path="res://resources/spirits/nature/hivea_t2.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "beezu_t1"
+display_name = "Beezu"
+description = "A worker bee girl carrying a pot of healing honey. She cares for her hive above all."
+portrait = ExtResource("2")
+element = 4
+tier = 1
+base_hp = 100
+base_attack = 10
+attack_speed = 1.0
+damage_reduction = 0
+xp_to_evolve = 100
+evolves_into = ExtResource("3")
+ability_name = "Mel"
+ability_description = "Every 4 seconds, heals the lowest HP ally for 15 HP."
+ability_type = 3
+ability_params = {
+"cooldown": 4.0,
+"heal_lowest_ally": true,
+"heal_amount": 15,
+"budget_value": 10.0
+}
+targeting_mode = 0
+is_ranged = true
+effect_color = Color(0.9, 0.8, 0.2, 1)
+animation_set = "nature_basic"

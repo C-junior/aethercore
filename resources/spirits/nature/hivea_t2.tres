@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/cleric.png" id="2"]
+[ext_resource type="Resource" path="res://resources/spirits/nature/queenopi_t3.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "hivea_t2"
+display_name = "Hivea"
+description = "Commanding a small swarm, her stingers carry potent venom."
+portrait = ExtResource("2")
+element = 4
+tier = 2
+base_hp = 130
+base_attack = 10
+attack_speed = 1.0
+damage_reduction = 0
+xp_to_evolve = 250
+evolves_into = ExtResource("3")
+ability_name = "Ferroada"
+ability_description = "Attacks apply Poison (5 damage per second for 2 seconds, stacks up to 3)."
+ability_type = 1
+ability_params = {
+"apply_poison": true,
+"budget_value": 27.0
+}
+targeting_mode = 0
+is_ranged = true
+effect_color = Color(0.7, 0.9, 0.1, 1)
+animation_set = "nature_evolved"

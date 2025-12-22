@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/archer.png" id="2"]
+[ext_resource type="Resource" path="res://resources/spirits/fire/kyuubi_t3.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "vulpyre_t2"
+display_name = "Vulpyre"
+description = "Three tails dance with hungry flames. The kitsune has awakened her inner fire."
+portrait = ExtResource("2")
+element = 0
+tier = 2
+base_hp = 120
+base_attack = 18
+attack_speed = 1.1
+damage_reduction = 0
+xp_to_evolve = 250
+evolves_into = ExtResource("3")
+ability_name = "Incendiar"
+ability_description = "Attacks apply Burn (3 damage per second for 3 seconds)."
+ability_type = 1
+ability_params = {
+"apply_burn": true,
+"budget_value": 18.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(1, 0.3, 0, 1)
+animation_set = "fire_evolved"

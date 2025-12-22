@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/mage.png" id="2"]
+[ext_resource type="Resource" path="res://resources/spirits/air/galea_t2.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "tweety_t1"
+display_name = "Tweety"
+description = "A small harpy learning to ride the winds. Her tailwind speeds up nearby allies."
+portrait = ExtResource("2")
+element = 3
+tier = 1
+base_hp = 95
+base_attack = 12
+attack_speed = 1.2
+damage_reduction = 0
+xp_to_evolve = 100
+evolves_into = ExtResource("3")
+ability_name = "Vento de Cauda"
+ability_description = "Adjacent allies gain +10% attack speed."
+ability_type = 7
+ability_params = {
+"attack_speed_bonus": 0.10,
+"budget_value": 8.0
+}
+targeting_mode = 0
+is_ranged = true
+effect_color = Color(0.7, 0.9, 1, 1)
+animation_set = "air_basic"

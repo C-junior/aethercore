@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/enemies/goblin.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "goblin"
+display_name = "Goblin"
+description = "A sneaky goblin. Not dangerous alone, but they come in numbers."
+portrait = ExtResource("2")
+element = 5
+tier = 1
+base_hp = 60
+base_attack = 8
+attack_speed = 1.0
+damage_reduction = 0
+xp_to_evolve = 999
+evolves_into = null
+ability_name = ""
+ability_description = ""
+ability_type = 0
+ability_params = {}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0.4, 0.6, 0.2, 1)
+animation_set = "enemy_basic"

@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/mage.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "zephyra_t3"
+display_name = "Zephyra"
+description = "Queen of the winds. A tornado swirls at her feet, and her arrival speeds all allies into battle."
+portrait = ExtResource("2")
+element = 3
+tier = 3
+base_hp = 140
+base_attack = 18
+attack_speed = 1.5
+damage_reduction = 0
+xp_to_evolve = 999
+evolves_into = null
+ability_name = "Ciclone"
+ability_description = "At battle start, all allies gain +40% attack speed for 5 seconds."
+ability_type = 4
+ability_params = {
+"team_haste": 0.40,
+"haste_duration": 5.0,
+"budget_value": 49.0
+}
+targeting_mode = 0
+is_ranged = true
+effect_color = Color(0.5, 0.8, 1, 1)
+animation_set = "air_ultimate"

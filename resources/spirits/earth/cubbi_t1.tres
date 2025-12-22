@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/guardian.png" id="2"]
+[ext_resource type="Resource" path="res://resources/spirits/earth/ursala_t2.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "cubbi_t1"
+display_name = "Cubbi"
+description = "A small bear cub with stone-hard determination. Her thick hide turns away blows."
+portrait = ExtResource("2")
+element = 2
+tier = 1
+base_hp = 150
+base_attack = 8
+attack_speed = 0.8
+damage_reduction = 3
+xp_to_evolve = 100
+evolves_into = ExtResource("3")
+ability_name = "Pele Dura"
+ability_description = "Reduces all incoming damage by 3."
+ability_type = 0
+ability_params = {
+"flat_reduction": 3,
+"budget_value": 6.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0.6, 0.4, 0.2, 1)
+animation_set = "earth_basic"

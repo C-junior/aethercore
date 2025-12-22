@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WaveData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/wave_data.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/goblin.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+wave_number = 1
+display_name = "Wave 1"
+enemies = [ExtResource("2")]
+enemy_positions = [0]
+gold_reward = 5
+is_boss = false
+boss_intro_text = ""
+hp_multiplier = 1.0
+attack_multiplier = 1.0

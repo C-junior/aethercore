@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/guardiana.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "terrabear_t3"
+display_name = "Terrabear"
+description = "Crystals encase her mighty form. At battle's start, she raises stone walls to protect her allies."
+portrait = ExtResource("2")
+element = 2
+tier = 3
+base_hp = 350
+base_attack = 12
+attack_speed = 0.9
+damage_reduction = 8
+xp_to_evolve = 999
+evolves_into = null
+ability_name = "Fortaleza"
+ability_description = "At battle start, grants Shield equal to 40% HP to self and back row allies."
+ability_type = 4
+ability_params = {
+"shield_percent": 0.4,
+"affects_back_row": true,
+"budget_value": 44.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0.4, 0.3, 0.15, 1)
+animation_set = "earth_ultimate"

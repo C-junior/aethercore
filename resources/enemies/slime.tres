@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/enemies/slime.jpg" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "slime"
+display_name = "Slime"
+description = "A gelatinous blob. Very weak, but they spawn in hordes."
+portrait = ExtResource("2")
+element = 5
+tier = 1
+base_hp = 30
+base_attack = 4
+attack_speed = 0.8
+damage_reduction = 0
+xp_to_evolve = 999
+evolves_into = null
+ability_name = ""
+ability_description = ""
+ability_type = 0
+ability_params = {}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0.3, 0.8, 0.3, 1)
+animation_set = "enemy_basic"

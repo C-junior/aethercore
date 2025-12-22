@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/berserker.png" id="2"]
+[ext_resource type="Resource" path="res://resources/spirits/water/mawtide_t2.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "sharka_t1"
+display_name = "Sharka"
+description = "A young shark warrior learning the ways of the hunt. Her frenzy awakens against weakened prey."
+portrait = ExtResource("2")
+element = 1
+tier = 1
+base_hp = 110
+base_attack = 14
+attack_speed = 0.9
+damage_reduction = 0
+xp_to_evolve = 100
+evolves_into = ExtResource("3")
+ability_name = "Frenesi"
+ability_description = "+15% attack speed when targeting enemies below 50% HP."
+ability_type = 0
+ability_params = {
+"frenzy_threshold": 0.5,
+"frenzy_speed_bonus": 0.15,
+"budget_value": 5.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0.2, 0.6, 1, 1)
+animation_set = "water_basic"

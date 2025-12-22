@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="MapData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/map_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+act_number = 1
+display_name = "Act 1: Verdant Grove"
+description = "A lush forest teeming with nature and fire spirits. Learn the basics of spirit collection and team building."
+floor_count = 9
+boss_id = "queenstruction"
+nodes_per_floor = Vector2i(2, 4)
+battle_weight = 0.45
+elite_weight = 0.15
+shop_weight = 0.12
+camp_weight = 0.12
+treasure_weight = 0.08
+event_weight = 0.08
+available_elements = [0, 2, 4]
+base_hp_multiplier = 1.0
+base_atk_multiplier = 1.0
+floor_hp_scaling = 0.08
+floor_atk_scaling = 0.06
+elite_floors = [3, 5, 7]
+guaranteed_shop_floors = [4, 8]
+pre_boss_floor_type = 4
+base_gold_reward = 8
+gold_per_floor = 2
+base_xp_reward = 30

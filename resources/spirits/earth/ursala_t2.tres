@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/guardian.png" id="2"]
+[ext_resource type="Resource" path="res://resources/spirits/earth/terrabear_t3.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "ursala_t2"
+display_name = "Ursala"
+description = "Stone plates grow from her shoulders. Her roar forces enemies to face her."
+portrait = ExtResource("2")
+element = 2
+tier = 2
+base_hp = 220
+base_attack = 8
+attack_speed = 0.8
+damage_reduction = 5
+xp_to_evolve = 250
+evolves_into = ExtResource("3")
+ability_name = "Provocar"
+ability_description = "Enemies prioritize attacking this unit while alive."
+ability_type = 7
+ability_params = {
+"has_taunt": true,
+"budget_value": 22.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0.5, 0.35, 0.2, 1)
+animation_set = "earth_evolved"
