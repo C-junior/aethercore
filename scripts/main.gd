@@ -63,6 +63,14 @@ func _connect_signals() -> void:
 	if capture_ui:
 		capture_ui.spirit_captured.connect(_on_capture_spirit_selected)
 		capture_ui.capture_skipped.connect(_on_capture_skipped)
+	
+	# Connect bench UI signals
+	if bench_ui:
+		bench_ui.spirit_selected.connect(_on_bench_spirit_selected)
+	
+	# Connect ally grid signals for placement
+	if ally_grid:
+		ally_grid.spirit_placed.connect(_on_ally_grid_spirit_placed)
 
 
 # =============================================================================
@@ -460,10 +468,54 @@ func _update_map_after_completion(completed_node: MapNode) -> void:
 	
 	# Show map with updated state
 	if map_ui:
-		map_ui.show_map(GameManager.current_map)
+		map_ui.display_map(GameManager.current_map, GameManager.current_node_id, "")
 
 
 func _on_spirit_captured(spirit_data: Resource) -> void:
 	# Show capture notification
 	print("[Main] Spirit captured: %s" % spirit_data.get("display_name"))
 	# TODO: Add visual feedback for capture
+
+
+# =============================================================================
+# BENCH & GRID PLACEMENT
+# =============================================================================
+
+func _on_bench_spirit_selected(spirit_data: SpiritData) -> void:
+	# Enable grid slot clicking when spirit is selected
+	_enable_grid_slot_clicking(true)
+
+
+func _on_ally_grid_spirit_placed(spirit: Node, slot_index: int) -> void:
+	# Spirit was placed on grid
+	if bench_ui:
+		bench_ui.update_bench()
+
+
+func _enable_grid_slot_clicking(enable: bool) -> void:
+	# During preparation, allow clicking empty grid slots when spirit selected
+	if enable and GameManager.current_phase == Enums.GamePhase.PREPARATION:
+		# Already connected via _input or grid signals
+		pass
+
+
+func _input(event: InputEvent) -> void:
+	# Handle grid slot clicking during preparation with selected spirit
+	if GameManager.current_phase != Enums.GamePhase.PREPARATION:
+		return
+	
+	if not bench_ui or not bench_ui.selected_spirit:
+		return
+	
+	if event is InputEventMouseButton:
+		var mb: InputEventMouseButton = event
+		if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+			# Check if clicked on ally grid
+			if ally_grid:
+				var slot_index: int = ally_grid.get_slot_from_position(mb.global_position)
+				if slot_index >= 0 and ally_grid.is_slot_empty(slot_index):
+					# Place selected spirit on this slot
+					bench_ui.place_on_grid(slot_index)
+					
+					# Sync to battle scene
+					_sync_grid_to_battle()

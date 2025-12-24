@@ -1,5 +1,5 @@
 ## BenchUI - Displays owned spirits not currently on the battle grid
-## Players drag spirits between bench and grid during preparation.
+## Players click spirits to select, then click grid slot to place.
 class_name BenchUI
 extends Control
 
@@ -8,11 +8,11 @@ extends Control
 # SIGNALS
 # =============================================================================
 
-## Emitted when a spirit is dragged from bench
-signal spirit_drag_started(spirit_data: SpiritData, slot_index: int)
+## Emitted when a spirit is selected from bench
+signal spirit_selected(spirit_data: SpiritData)
 
-## Emitted when a spirit is dropped on a slot
-signal spirit_dropped_on_grid(spirit_data: SpiritData, grid_slot: int)
+## Emitted when spirit selection is cleared
+signal selection_cleared
 
 
 # =============================================================================
@@ -38,9 +38,9 @@ signal spirit_dropped_on_grid(spirit_data: SpiritData, grid_slot: int)
 ## Spirit slots on bench (parallel to visual slots)
 var bench_slots: Array = []
 
-## Currently dragged spirit data
-var dragged_spirit: SpiritData = null
-var dragged_from_slot: int = -1
+## Currently selected spirit for placement
+var selected_spirit: SpiritData = null
+var selected_slot_index: int = -1
 
 
 # =============================================================================
@@ -192,36 +192,103 @@ func _on_slot_gui_input(event: InputEvent, slot_index: int) -> void:
 		if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
 			var spirit: SpiritData = bench_slots[slot_index]
 			if spirit:
-				# Start drag
-				dragged_spirit = spirit
-				dragged_from_slot = slot_index
-				spirit_drag_started.emit(spirit, slot_index)
+				# Toggle selection
+				if selected_spirit == spirit:
+					# Deselect
+					clear_selection()
+				else:
+					# Select this spirit
+					select_spirit(spirit, slot_index)
 
 
 func _on_slot_mouse_entered(slot_index: int) -> void:
-	# Visual hover feedback
-	if slot_index < slots_container.get_child_count():
+	# Visual hover feedback (only if not selected)
+	if slot_index < slots_container.get_child_count() and slot_index != selected_slot_index:
 		var slot: PanelContainer = slots_container.get_child(slot_index)
 		var style: StyleBoxFlat = slot.get_theme_stylebox("panel").duplicate()
 		style.border_color = Color(0.5, 0.5, 0.6, 1.0)
 		slot.add_theme_stylebox_override("panel", style)
 
 
-## Place a spirit on the grid from bench
-func place_on_grid(spirit_data: SpiritData, grid_slot: int) -> void:
+## Select a spirit for placement
+func select_spirit(spirit_data: SpiritData, slot_index: int) -> void:
+	# Clear previous selection visual
+	if selected_slot_index >= 0 and selected_slot_index < slots_container.get_child_count():
+		_reset_slot_style(selected_slot_index)
+	
+	selected_spirit = spirit_data
+	selected_slot_index = slot_index
+	
+	# Highlight selected slot
+	if slot_index < slots_container.get_child_count():
+		var slot: PanelContainer = slots_container.get_child(slot_index)
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(0.2, 0.3, 0.4, 0.9)
+		style.corner_radius_top_left = 8
+		style.corner_radius_top_right = 8
+		style.corner_radius_bottom_left = 8
+		style.corner_radius_bottom_right = 8
+		style.border_width_left = 3
+		style.border_width_right = 3
+		style.border_width_top = 3
+		style.border_width_bottom = 3
+		style.border_color = Color(0.3, 0.8, 0.3, 1.0)  # Green border for selected
+		slot.add_theme_stylebox_override("panel", style)
+	
+	spirit_selected.emit(spirit_data)
+	
+	# Update title to show selected
+	if title_label:
+		title_label.text = "🎒 Bench - Selected: %s (click grid slot to place)" % spirit_data.display_name
+
+
+## Clear selection
+func clear_selection() -> void:
+	if selected_slot_index >= 0 and selected_slot_index < slots_container.get_child_count():
+		_reset_slot_style(selected_slot_index)
+	
+	selected_spirit = null
+	selected_slot_index = -1
+	selection_cleared.emit()
+	update_bench()
+
+
+func _reset_slot_style(slot_index: int) -> void:
+	if slot_index >= slots_container.get_child_count():
+		return
+	var slot: PanelContainer = slots_container.get_child(slot_index)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.15, 0.15, 0.2, 0.8)
+	style.corner_radius_top_left = 8
+	style.corner_radius_top_right = 8
+	style.corner_radius_bottom_left = 8
+	style.corner_radius_bottom_right = 8
+	style.border_width_left = 2
+	style.border_width_right = 2
+	style.border_width_top = 2
+	style.border_width_bottom = 2
+	style.border_color = Color(0.3, 0.3, 0.4, 0.8)
+	slot.add_theme_stylebox_override("panel", style)
+
+
+## Place the selected spirit on the grid
+func place_on_grid(grid_slot: int) -> void:
+	if not selected_spirit:
+		return
+	
 	# Remove from bench
 	for i in bench_slots.size():
-		if bench_slots[i] == spirit_data:
+		if bench_slots[i] == selected_spirit:
 			bench_slots[i] = null
 			_update_slot_visual(i, null)
 			break
 	
 	# Add to grid_spirits
 	if grid_slot >= 0 and grid_slot < GameManager.grid_spirits.size():
-		GameManager.grid_spirits[grid_slot] = spirit_data
+		GameManager.grid_spirits[grid_slot] = selected_spirit
 	
-	spirit_dropped_on_grid.emit(spirit_data, grid_slot)
-	update_bench()
+	# Clear selection
+	clear_selection()
 
 
 ## Return a spirit from grid to bench
