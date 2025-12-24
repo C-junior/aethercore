@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "health_charm"
+display_name = "Health Charm"
+description = "A protective amulet that increases maximum health."
+type = 0
+hp_bonus = 20
+attack_bonus = 0
+speed_bonus = 0.0
+evolves_spirit_id = ""
+evolution_result_id = ""
+buy_price = 8

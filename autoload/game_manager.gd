@@ -33,6 +33,9 @@ var grid_spirits: Array = [null, null, null, null]
 ## Shop offerings (SpiritData resources)
 var shop_offerings: Array[Resource] = []
 
+## Player's item inventory (ItemData resources)
+var item_inventory: Array[Resource] = []
+
 
 # =============================================================================
 # MAP STATE

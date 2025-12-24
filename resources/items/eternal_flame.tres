@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "eternal_flame"
+display_name = "Eternal Flame"
+description = "A mystical fire that triggers Hyper Evolution in fire spirits. Legend says it burns forever."
+type = 1
+hp_bonus = 0
+attack_bonus = 0
+speed_bonus = 0.0
+evolves_spirit_id = "embera_t3"
+evolution_result_id = "inferna_hyper"
+buy_price = 50

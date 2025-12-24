@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "iron_sword"
+display_name = "Iron Sword"
+description = "A sturdy blade that increases attack power."
+type = 0
+hp_bonus = 0
+attack_bonus = 5
+speed_bonus = 0.0
+evolves_spirit_id = ""
+evolution_result_id = ""
+buy_price = 10
