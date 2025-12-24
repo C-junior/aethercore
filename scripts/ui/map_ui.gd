@@ -35,6 +35,9 @@ var current_nodes: Array[MapNode] = []
 ## Map of node ID to button reference
 var node_buttons: Dictionary = {}
 
+## Active pulse tweens (node_id -> Tween)
+var pulse_tweens: Dictionary = {}
+
 ## Current player position (node ID)
 var current_node_id: String = ""
 
@@ -87,6 +90,13 @@ func display_map(nodes: Array[MapNode], current_id: String, act_name: String = "
 
 ## Hide the map
 func hide_map() -> void:
+	# Kill all pulse tweens
+	for node_id in pulse_tweens.keys():
+		var tween: Tween = pulse_tweens[node_id]
+		if tween and tween.is_valid():
+			tween.kill()
+	pulse_tweens.clear()
+	
 	visible = false
 
 
@@ -114,6 +124,13 @@ func refresh_availability(visited_id: String) -> void:
 # =============================================================================
 
 func _clear_map() -> void:
+	# Kill all pulse tweens
+	for node_id in pulse_tweens.keys():
+		var tween: Tween = pulse_tweens[node_id]
+		if tween and tween.is_valid():
+			tween.kill()
+	pulse_tweens.clear()
+	
 	# Clear node buttons
 	for child in nodes_container.get_children():
 		child.queue_free()
@@ -272,16 +289,40 @@ func _update_node_availability() -> void:
 		elif node.is_available:
 			button.modulate = Color.WHITE
 			# Pulse animation for available nodes
-			_animate_available_node(button)
+			_animate_available_node(button, node.id)
 		else:
 			button.modulate = Color(0.7, 0.7, 0.7, 0.9)
 
 
-func _animate_available_node(button: Button) -> void:
+func _animate_available_node(button: Button, node_id: String):
+	# Kill any existing tween for this node
+	if pulse_tweens.has(node_id):
+		var old_tween: Tween = pulse_tweens[node_id]
+		if old_tween and old_tween.is_valid():
+			old_tween.kill()
+	
+	# Create new pulse tween
 	var tween := create_tween()
-	tween.set_loops()
+	pulse_tweens[node_id] = tween
+	
+	# Pulse animation - loops by calling itself when finished
 	tween.tween_property(button, "modulate:a", 0.7, 0.5)
 	tween.tween_property(button, "modulate:a", 1.0, 0.5)
+	tween.finished.connect(_on_pulse_finished.bind(button, node_id))
+
+
+func _on_pulse_finished(button: Button, node_id: String):
+	# Only continue pulsing if button still exists and node is still available
+	if not is_instance_valid(button) or not visible:
+		pulse_tweens.erase(node_id)
+		return
+	
+	# Check if node is still available
+	var node: MapNode = _get_node_by_id(node_id)
+	if node and node.is_available and not node.is_visited:
+		_animate_available_node(button, node_id)
+	else:
+		pulse_tweens.erase(node_id)
 
 
 # =============================================================================

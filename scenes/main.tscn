@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dey2661g5bpqr"]
+[gd_scene load_steps=10 format=3 uid="uid://dey2661g5bpqr"]
 
 [ext_resource type="Script" uid="uid://bgwuou67gglhu" path="res://scripts/main.gd" id="1"]
 [ext_resource type="Script" uid="uid://blkry3skl274l" path="res://scripts/ui/shop_ui.gd" id="2"]
@@ -7,7 +7,8 @@
 [ext_resource type="Script" uid="uid://c560ifvwjcu57" path="res://scripts/battle/battle_manager.gd" id="5"]
 [ext_resource type="Texture2D" uid="uid://biunekqle4mqi" path="res://assets/maps/bg-field.png" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/ui/map_ui.tscn" id="7"]
-
+[ext_resource type="Script" uid="uid://uryrs3ixllum" path="res://scripts/ui/capture_ui.gd" id="8"]
+[ext_resource type="Script" uid="uid://dn6evie5x6wsx" path="res://scripts/ui/bench_ui.gd" id="9"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -235,4 +236,94 @@ text = "🔄 Play Again"
 
 [node name="MapUI" parent="." instance=ExtResource("7")]
 visible = false
+layout_mode = 1
 
+[node name="CaptureUI" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8")
+
+[node name="Background" type="Panel" parent="CaptureUI"]
+modulate = Color(0, 0, 0, 0.85)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="CaptureUI"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 50.0
+offset_right = 650.0
+offset_bottom = 100.0
+text = "✨ VICTORY! ✨"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="CaptureUI"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 110.0
+offset_right = 700.0
+offset_bottom = 140.0
+text = "Choose a spirit to purify and capture:"
+horizontal_alignment = 1
+
+[node name="SpiritsContainer" type="HBoxContainer" parent="CaptureUI"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 160.0
+offset_right = 700.0
+offset_bottom = 400.0
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="SkipButton" type="Button" parent="CaptureUI"]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 420.0
+offset_right = 500.0
+offset_bottom = 460.0
+text = "Skip Capture"
+
+[node name="BenchUI" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -110.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("9")
+
+[node name="Background" type="Panel" parent="BenchUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="BenchUI"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 5.0
+offset_right = 200.0
+offset_bottom = 25.0
+text = "🎒 Bench (0/8)"
+
+[node name="SlotsContainer" type="HBoxContainer" parent="BenchUI"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 700.0
+offset_bottom = 100.0
+theme_override_constants/separation = 8

@@ -13,6 +13,8 @@ extends Control
 @onready var starter_selection: Control = $StarterSelection
 @onready var game_over_screen: Control = $GameOverScreen
 @onready var map_ui: Control = $MapUI
+@onready var capture_ui: Control = $CaptureUI
+@onready var bench_ui: Control = $BenchUI
 
 
 # =============================================================================
@@ -56,6 +58,11 @@ func _connect_signals() -> void:
 	# Connect map UI signal
 	if map_ui:
 		map_ui.node_selected.connect(_on_map_node_selected)
+	
+	# Connect capture UI signals
+	if capture_ui:
+		capture_ui.spirit_captured.connect(_on_capture_spirit_selected)
+		capture_ui.capture_skipped.connect(_on_capture_skipped)
 
 
 # =============================================================================
@@ -196,6 +203,8 @@ func _show_map_selection() -> void:
 		game_over_screen.visible = false
 	if battle_scene:
 		battle_scene.visible = false
+	if bench_ui:
+		bench_ui.hide_bench()
 	
 	# Show the map
 	if map_ui and GameManager.current_map.size() > 0:
@@ -207,13 +216,17 @@ func _show_preparation() -> void:
 	if starter_selection:
 		starter_selection.visible = false
 	if map_ui:
-		map_ui.visible = false
+		map_ui.hide_map()
 	if game_over_screen:
 		game_over_screen.visible = false
 	
+	# Shop is NOT visible during preparation - only on SHOP map nodes
 	if shop_ui:
-		shop_ui.visible = true
-		shop_ui.update_display()
+		shop_ui.visible = false
+	
+	# Show bench for spirit positioning
+	if bench_ui:
+		bench_ui.show_bench()
 	
 	if battle_scene:
 		battle_scene.visible = true
@@ -224,6 +237,8 @@ func _show_preparation() -> void:
 func _show_battle() -> void:
 	if shop_ui:
 		shop_ui.visible = false
+	if bench_ui:
+		bench_ui.hide_bench()
 
 
 func _show_shop_only() -> void:
@@ -327,9 +342,58 @@ func _on_battle_ended(result: Enums.BattleResult) -> void:
 
 
 func _show_victory_screen() -> void:
-	# Brief victory display before returning to map
-	await get_tree().create_timer(1.5).timeout
-	# GameManager handles the rest in _on_battle_ended
+	# Get defeated enemies for capture selection
+	var wave_data: WaveData = GameManager.get_current_wave_data() as WaveData
+	var defeated_spirits: Array[SpiritData] = []
+	
+	if wave_data and wave_data.enemies.size() > 0:
+		for enemy in wave_data.enemies:
+			if enemy:
+				defeated_spirits.append(enemy)
+	
+	# Show capture UI if there are spirits to capture
+	if defeated_spirits.size() > 0 and capture_ui:
+		# Brief pause before showing capture UI
+		await get_tree().create_timer(0.5).timeout
+		GameManager.current_phase = Enums.GamePhase.CAPTURE_SELECTION
+		capture_ui.show_capture_options(defeated_spirits)
+	else:
+		# No spirits to capture, proceed directly
+		_complete_battle_victory()
+
+
+func _on_capture_spirit_selected(spirit_data: SpiritData) -> void:
+	# Add captured spirit to owned spirits
+	var purified_spirit := spirit_data.duplicate_spirit()
+	GameManager.owned_spirits.append(purified_spirit)
+	EventBus.spirit_captured.emit(purified_spirit)
+	
+	# Continue with battle completion
+	_complete_battle_victory()
+
+
+func _on_capture_skipped() -> void:
+	# Player chose not to capture, proceed
+	_complete_battle_victory()
+
+
+func _complete_battle_victory() -> void:
+	if capture_ui:
+		capture_ui.visible = false
+	
+	# Complete the node and return to map
+	if GameManager.active_node:
+		var node: MapNode = GameManager.active_node
+		var gold_reward: int = GameManager.current_map_data.get_floor_gold_reward(node.floor_number) * int(node.gold_multiplier) if GameManager.current_map_data else 10
+		GameManager.gold += gold_reward
+		GameManager.gold += GameManager.calculate_interest()
+		
+		# Check boss completion
+		if node.type == MapNode.NodeType.BOSS:
+			GameManager._on_boss_defeated()
+		else:
+			GameManager.current_phase = Enums.GamePhase.MAP_SELECTION
+			_update_map_after_completion(node)
 
 
 func _on_run_ended(is_victory: bool) -> void:
@@ -381,6 +445,22 @@ func _on_act_started(act_number: int, map_data: Resource) -> void:
 
 func _on_map_node_selected(node: MapNode) -> void:
 	EventBus.map_node_selected.emit(node)
+
+
+func _update_map_after_completion(completed_node: MapNode) -> void:
+	# Mark node as completed and update availability
+	completed_node.is_completed = true
+	completed_node.is_available = false
+	
+	# Update connected nodes to be available
+	for connected_id in completed_node.connected_nodes:
+		var connected_node: MapNode = GameManager.get_map_node_by_id(connected_id)
+		if connected_node and not connected_node.is_completed:
+			connected_node.is_available = true
+	
+	# Show map with updated state
+	if map_ui:
+		map_ui.show_map(GameManager.current_map)
 
 
 func _on_spirit_captured(spirit_data: Resource) -> void:

@@ -238,7 +238,7 @@ func get_back_row_spirits() -> Array:
 
 ## Get adjacent spirits to a slot
 func get_adjacent_spirits(slot_index: int) -> Array:
-	var adjacent_slots: Array[int] = Constants.ADJACENCY_MAP.get(slot_index, [])
+	var adjacent_slots: Array = Constants.ADJACENCY_MAP.get(slot_index, [])
 	var result: Array = []
 	
 	for adj_slot in adjacent_slots:

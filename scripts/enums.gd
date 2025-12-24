@@ -72,6 +72,7 @@ enum GamePhase {
 	PREPARATION,        ## Pre-battle setup, positioning
 	BATTLE,             ## Combat in progress
 	BATTLE_END,         ## Victory/defeat screen
+	CAPTURE_SELECTION,  ## Choose defeated spirit to purify/capture
 	SHOP,               ## At shop node
 	CAMP,               ## At camp/rest node
 	BOSS_INTRO,         ## Boss encounter intro

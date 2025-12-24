@@ -55,6 +55,12 @@ var is_enemy: bool = false
 ## Whether this is a boss
 var is_boss: bool = false
 
+## Whether this spirit is corrupted (enemy spirits)
+var is_corrupted: bool = false:
+	set(value):
+		is_corrupted = value
+		_apply_corruption_visual()
+
 
 # =============================================================================
 # COMBAT STATE
@@ -122,6 +128,21 @@ func _update_visuals() -> void:
 	if hp_bar:
 		hp_bar.max_value = max_hp
 		hp_bar.value = current_hp
+	
+	# Apply corruption visual for enemies
+	if is_enemy:
+		is_corrupted = true
+
+
+func _apply_corruption_visual() -> void:
+	if not sprite:
+		return
+	
+	if is_corrupted:
+		# Dark purple tint for corrupted spirits
+		sprite.modulate = Color(0.6, 0.3, 0.7, 1.0)
+	else:
+		sprite.modulate = Color.WHITE
 
 
 # =============================================================================

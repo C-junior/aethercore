@@ -124,7 +124,7 @@ static func _find_taunter(enemies: Array) -> Node:
 ## @param center_slot: Grid slot to check adjacency from
 ## @return: Array of adjacent Spirit nodes
 static func get_adjacent_enemies(all_enemies: Array, center_slot: int) -> Array:
-	var adjacent_slots: Array[int] = Constants.ADJACENCY_MAP.get(center_slot, [])
+	var adjacent_slots: Array = Constants.ADJACENCY_MAP.get(center_slot, [])
 	var result: Array = []
 	
 	for enemy in all_enemies:
@@ -136,7 +136,7 @@ static func get_adjacent_enemies(all_enemies: Array, center_slot: int) -> Array:
 
 ## Get all enemies in a specific row
 static func get_enemies_in_row(all_enemies: Array, row: Enums.GridRow) -> Array:
-	var slots: Array[int] = Constants.FRONT_ROW_SLOTS if row == Enums.GridRow.FRONT else Constants.BACK_ROW_SLOTS
+	var slots: Array = Constants.FRONT_ROW_SLOTS if row == Enums.GridRow.FRONT else Constants.BACK_ROW_SLOTS
 	var result: Array = []
 	
 	for enemy in all_enemies:

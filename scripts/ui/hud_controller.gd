@@ -173,7 +173,69 @@ func _on_battle_ended(_result: Enums.BattleResult) -> void:
 
 
 func _on_start_battle_pressed() -> void:
-	EventBus.battle_requested.emit()
+	# Disable button during countdown
+	if start_button:
+		start_button.disabled = true
+	
+	# Start countdown
+	_start_battle_countdown()
+
+
+func _start_battle_countdown() -> void:
+	# Create countdown label
+	var countdown_label := Label.new()
+	countdown_label.name = "CountdownLabel"
+	countdown_label.add_theme_font_size_override("font_size", 72)
+	countdown_label.add_theme_color_override("font_color", Color.WHITE)
+	countdown_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	countdown_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	countdown_label.anchors_preset = Control.PRESET_CENTER
+	countdown_label.anchor_left = 0.5
+	countdown_label.anchor_right = 0.5
+	countdown_label.anchor_top = 0.5
+	countdown_label.anchor_bottom = 0.5
+	countdown_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	countdown_label.grow_vertical = Control.GROW_DIRECTION_BOTH
+	countdown_label.offset_left = -100
+	countdown_label.offset_right = 100
+	countdown_label.offset_top = -50
+	countdown_label.offset_bottom = 50
+	add_child(countdown_label)
+	
+	# Animate countdown 3-2-1-FIGHT
+	var tween: Tween = create_tween()
+	
+	# 3
+	countdown_label.text = "3"
+	countdown_label.scale = Vector2(1.5, 1.5)
+	tween.tween_property(countdown_label, "scale", Vector2(1.0, 1.0), 0.3)
+	tween.tween_interval(0.7)
+	
+	# 2
+	tween.tween_callback(func(): countdown_label.text = "2"; countdown_label.scale = Vector2(1.5, 1.5))
+	tween.tween_property(countdown_label, "scale", Vector2(1.0, 1.0), 0.3)
+	tween.tween_interval(0.7)
+	
+	# 1
+	tween.tween_callback(func(): countdown_label.text = "1"; countdown_label.scale = Vector2(1.5, 1.5))
+	tween.tween_property(countdown_label, "scale", Vector2(1.0, 1.0), 0.3)
+	tween.tween_interval(0.7)
+	
+	# FIGHT!
+	tween.tween_callback(func(): 
+		countdown_label.text = "FIGHT!"
+		countdown_label.add_theme_color_override("font_color", Color.YELLOW)
+		countdown_label.scale = Vector2(2.0, 2.0)
+	)
+	tween.tween_property(countdown_label, "scale", Vector2(1.0, 1.0), 0.2)
+	tween.tween_interval(0.3)
+	
+	# Cleanup and start battle
+	tween.tween_callback(func():
+		countdown_label.queue_free()
+		GameManager.current_phase = Enums.GamePhase.BATTLE
+		EventBus.battle_requested.emit()
+	)
 
 
 # =============================================================================

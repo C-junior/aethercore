@@ -440,10 +440,20 @@ func remove_spirit_from_grid(slot_index: int) -> void:
 ## Get adjacent slot indices
 ## @param slot_index: Source slot
 ## @return: Array of adjacent slot indices
-func get_adjacent_slots(slot_index: int) -> Array[int]:
+func get_adjacent_slots(slot_index: int) -> Array:
 	if Constants.ADJACENCY_MAP.has(slot_index):
 		return Constants.ADJACENCY_MAP[slot_index].duplicate()
 	return []
+
+
+## Get a map node by its ID
+## @param node_id: The unique ID of the node
+## @return: MapNode or null if not found
+func get_map_node_by_id(node_id: String) -> MapNode:
+	for node in current_map:
+		if node.id == node_id:
+			return node
+	return null
 
 
 ## Check if a slot is in the front row
@@ -478,37 +488,35 @@ func get_current_wave_data() -> Resource:
 
 
 func _create_wave_from_node(node: MapNode) -> Resource:
-	# Load the WaveData script to create a resource
-	var wave_script: GDScript = load("res://scripts/resources/wave_data.gd")
-	if not wave_script:
-		return null
-	
-	var wave: Resource = wave_script.new()
-	wave.set("wave_number", node.floor_number)
-	wave.set("display_name", node.get_display_name())
-	wave.set("gold_reward", int(current_map_data.get_floor_gold_reward(node.floor_number) * node.gold_multiplier) if current_map_data else 10)
-	wave.set("is_boss", node.type == MapNode.NodeType.BOSS)
-	wave.set("hp_multiplier", current_map_data.get_floor_hp_multiplier(node.floor_number) if current_map_data else 1.0)
-	wave.set("atk_multiplier", current_map_data.get_floor_atk_multiplier(node.floor_number) if current_map_data else 1.0)
+	# Create a new WaveData resource directly
+	var wave := WaveData.new()
+	wave.wave_number = node.floor_number
+	wave.display_name = node.get_display_name()
+	wave.gold_reward = int(current_map_data.get_floor_gold_reward(node.floor_number) * node.gold_multiplier) if current_map_data else 10
+	wave.is_boss = node.type == MapNode.NodeType.BOSS
+	wave.hp_multiplier = current_map_data.get_floor_hp_multiplier(node.floor_number) if current_map_data else 1.0
 	
 	# Generate enemies based on element
-	var enemies: Array = []
-	var enemy_positions: Array = []
-	
 	for i in node.enemy_count:
-		var enemy: Resource = _get_enemy_for_element(node.element, node.enemy_tier)
+		var enemy: SpiritData = _get_enemy_for_element(node.element, node.enemy_tier) as SpiritData
 		if enemy:
-			enemies.append(enemy)
-			enemy_positions.append(i)
-	
-	wave.set("enemies", enemies)
-	wave.set("enemy_positions", enemy_positions)
+			wave.enemies.append(enemy)
+			wave.enemy_positions.append(i)
 	
 	return wave
 
 
 func _get_enemy_for_element(element: Enums.Element, tier: int) -> Resource:
-	# For now, use existing enemies - TODO: Create element-specific enemies
+	# Use corrupted versions of player spirits when possible
+	if spirits_by_element.has(element) and spirits_by_element[element].size() > 0:
+		var element_spirits: Array = spirits_by_element[element]
+		return element_spirits.pick_random()
+	
+	# Fallback: use all spirits if no matching element
+	if spirit_pool.size() > 0:
+		return spirit_pool.pick_random()
+	
+	# Legacy fallback: use dedicated enemy files
 	var enemy_files: Array[String] = [
 		"res://resources/enemies/goblin.tres",
 		"res://resources/enemies/slime.tres",
@@ -560,29 +568,9 @@ func _on_starter_selected(spirit_data: Resource) -> void:
 func _on_battle_ended(result: Enums.BattleResult) -> void:
 	match result:
 		Enums.BattleResult.VICTORY:
-			if active_node:
-				# Award rewards
-				var gold_reward: int = int(current_map_data.get_floor_gold_reward(active_node.floor_number) * active_node.gold_multiplier) if current_map_data else 10
-				gold += gold_reward
-				gold += calculate_interest()
-				
-				# Give spirit of node's element
-				if active_node.element != Enums.Element.NEUTRAL:
-					var reward_spirit: Resource = get_spirit_by_element(active_node.element)
-					if reward_spirit:
-						owned_spirits.append(reward_spirit.duplicate())
-						EventBus.spirit_captured.emit(reward_spirit)
-				
-				# Complete the node
-				_complete_node(active_node)
-			else:
-				# Legacy wave system fallback
-				if current_wave >= 4:
-					EventBus.run_ended.emit(true)
-					current_phase = Enums.GamePhase.GAME_OVER
-				else:
-					current_phase = Enums.GamePhase.MAP_SELECTION
-					generate_shop()
+			# Victory handling (rewards, capture, node completion) 
+			# is now managed by main.gd through capture UI
+			pass
 		
 		Enums.BattleResult.DEFEAT, Enums.BattleResult.TIMEOUT:
 			EventBus.run_ended.emit(false)

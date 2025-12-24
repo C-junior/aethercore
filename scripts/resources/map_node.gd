@@ -47,6 +47,9 @@ enum NodeType {
 ## Whether the player can currently select this node
 @export var is_available: bool = false
 
+## Whether the player has completed this node
+@export var is_completed: bool = false
+
 
 # =============================================================================
 # ENCOUNTER PROPERTIES (for BATTLE/ELITE/BOSS nodes)
@@ -162,6 +165,7 @@ func duplicate_node() -> MapNode:
 	copy.connected_nodes = connected_nodes.duplicate()
 	copy.is_visited = is_visited
 	copy.is_available = is_available
+	copy.is_completed = is_completed
 	copy.enemy_count = enemy_count
 	copy.enemy_tier = enemy_tier
 	copy.is_elite = is_elite
