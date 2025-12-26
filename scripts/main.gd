@@ -15,6 +15,8 @@ extends Control
 @onready var map_ui: Control = $MapUI
 @onready var capture_ui: Control = $CaptureUI
 @onready var bench_ui: Control = $BenchUI
+@onready var spirit_info_ui: SpiritInfoUI = $SpiritInfoUI
+@onready var item_inventory_ui: ItemInventoryUI = $ItemInventoryUI
 
 
 # =============================================================================
@@ -67,6 +69,8 @@ func _connect_signals() -> void:
 	# Connect bench UI signals
 	if bench_ui:
 		bench_ui.spirit_selected.connect(_on_bench_spirit_selected)
+		bench_ui.spirit_hovered.connect(_on_spirit_hovered)
+		bench_ui.spirit_unhovered.connect(_on_spirit_unhovered)
 	
 	# Connect ally grid signals for placement
 	if ally_grid:
@@ -500,11 +504,8 @@ func _enable_grid_slot_clicking(enable: bool) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	# Handle grid slot clicking during preparation with selected spirit
+	# Handle grid slot clicking during preparation
 	if GameManager.current_phase != Enums.GamePhase.PREPARATION:
-		return
-	
-	if not bench_ui or not bench_ui.selected_spirit:
 		return
 	
 	if event is InputEventMouseButton:
@@ -513,9 +514,35 @@ func _input(event: InputEvent) -> void:
 			# Check if clicked on ally grid
 			if ally_grid:
 				var slot_index: int = ally_grid.get_slot_from_position(mb.global_position)
-				if slot_index >= 0 and ally_grid.is_slot_empty(slot_index):
-					# Place selected spirit on this slot
-					bench_ui.place_on_grid(slot_index)
-					
-					# Sync to battle scene
-					_sync_grid_to_battle()
+				if slot_index >= 0:
+					if ally_grid.is_slot_empty(slot_index):
+						# Empty slot: place selected spirit from bench
+						if bench_ui and bench_ui.selected_spirit:
+							bench_ui.place_on_grid(slot_index)
+							_sync_grid_to_battle()
+					else:
+						# Occupied slot: handle based on context
+						var spirit_data: SpiritData = GameManager.grid_spirits[slot_index] as SpiritData
+						if spirit_data:
+							# If item is pending, equip to this grid spirit
+							if bench_ui and bench_ui.pending_item:
+								GameManager.equip_item_to_spirit(bench_ui.pending_item, spirit_data)
+								_sync_grid_to_battle()
+							# If no spirit selected and no item pending, return to bench
+							elif bench_ui and not bench_ui.selected_spirit:
+								bench_ui.return_to_bench(spirit_data, slot_index)
+								_sync_grid_to_battle()
+
+
+# =============================================================================
+# SPIRIT INFO UI
+# =============================================================================
+
+func _on_spirit_hovered(spirit_data: SpiritData, screen_pos: Vector2) -> void:
+	if spirit_info_ui:
+		spirit_info_ui.show_spirit_info(spirit_data, screen_pos)
+
+
+func _on_spirit_unhovered() -> void:
+	if spirit_info_ui:
+		spirit_info_ui.hide_info()

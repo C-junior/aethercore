@@ -465,8 +465,163 @@ func is_front_row(slot_index: int) -> bool:
 
 
 # =============================================================================
-# LEGACY WAVE SUPPORT (for backwards compatibility)
+# ITEM MANAGEMENT
 # =============================================================================
+
+## Equip an item to a spirit
+## @param item: The ItemData to equip
+## @param spirit: The SpiritData to receive the item
+## @return: true if equip successful
+func equip_item_to_spirit(item: Resource, spirit: Resource) -> bool:
+	var item_data: ItemData = item as ItemData
+	var spirit_data: SpiritData = spirit as SpiritData
+	
+	if not item_data or not spirit_data:
+		return false
+	
+	# Check if spirit already has an item
+	if spirit_data.held_item:
+		# Return existing item to inventory
+		item_inventory.append(spirit_data.held_item)
+	
+	# Assign new item
+	spirit_data.held_item = item_data
+	
+	# Remove item from inventory
+	var idx: int = item_inventory.find(item)
+	if idx >= 0:
+		item_inventory.remove_at(idx)
+	
+	EventBus.item_equipped.emit(item, spirit)
+	print("[GameManager] Equipped %s to %s" % [item_data.display_name, spirit_data.display_name])
+	return true
+
+
+## Add an item to player inventory
+func add_item_to_inventory(item: Resource) -> void:
+	if item:
+		item_inventory.append(item)
+		print("[GameManager] Added item to inventory: %s" % item.get("display_name"))
+
+
+# =============================================================================
+# BENCH XP SYSTEM
+# =============================================================================
+
+## Award XP to bench spirits after battle
+## @param battle_xp: XP earned by active spirits in battle
+func award_bench_xp(battle_xp: int) -> void:
+	# Bench spirits get 50% of battle XP (per GDD 2.2)
+	var bench_xp: int = int(battle_xp * 0.5)
+	if bench_xp <= 0:
+		return
+	
+	# Get bench spirits (owned but not on grid)
+	var bench_spirits: Array = []
+	for spirit in owned_spirits:
+		if spirit and spirit not in grid_spirits:
+			bench_spirits.append(spirit)
+	
+	if bench_spirits.size() == 0:
+		return
+	
+	# Award XP to each bench spirit
+	for spirit in bench_spirits:
+		var spirit_data: SpiritData = spirit as SpiritData
+		if spirit_data:
+			_apply_xp_to_spirit(spirit_data, bench_xp)
+	
+	EventBus.bench_xp_awarded.emit(bench_spirits, bench_xp)
+	print("[GameManager] Awarded %d bench XP to %d spirits" % [bench_xp, bench_spirits.size()])
+
+
+## Apply XP to a spirit and check for evolution
+func _apply_xp_to_spirit(spirit: SpiritData, xp: int) -> void:
+	# Check if spirit can evolve normally
+	if spirit.evolves_into and spirit.xp_to_evolve > 0:
+		# Track XP (we'll need to add a current_xp property or use a dictionary)
+		# For now, we'll check if accumulated XP triggers evolution
+		pass  # TODO: Track spirit XP properly
+	
+	# Check for Hyper Evolution
+	check_hyper_evolution(spirit)
+
+
+# =============================================================================
+# HYPER EVOLUTION
+# =============================================================================
+
+## Check if a spirit should trigger Hyper Evolution
+## @param spirit: The SpiritData to check
+## @return: true if Hyper Evolution was triggered
+func check_hyper_evolution(spirit: Resource) -> bool:
+	var spirit_data: SpiritData = spirit as SpiritData
+	if not spirit_data:
+		return false
+	
+	# Must be T3 tier
+	if spirit_data.tier != Enums.Tier.T3:
+		return false
+	
+	# Must have held item
+	if not spirit_data.held_item:
+		return false
+	
+	var held_item: ItemData = spirit_data.held_item as ItemData
+	if not held_item:
+		return false
+	
+	# Must be evolution key type
+	if held_item.type != ItemData.ItemType.EVOLUTION_KEY:
+		return false
+	
+	# Check if key matches this spirit
+	if held_item.evolves_spirit_id != spirit_data.id:
+		return false
+	
+	# Load the Hyper evolution result
+	var hyper_path: String = "res://resources/spirits/"
+	# Try to find the hyper form based on evolution_result_id
+	var result_id: String = held_item.evolution_result_id
+	if result_id.is_empty():
+		return false
+	
+	# Search for the hyper spirit in all element folders
+	var element_dirs: Array[String] = ["fire", "water", "earth", "air", "nature"]
+	var hyper_spirit: SpiritData = null
+	
+	for element_dir in element_dirs:
+		var path: String = "res://resources/spirits/%s/%s.tres" % [element_dir, result_id]
+		if ResourceLoader.exists(path):
+			hyper_spirit = load(path) as SpiritData
+			break
+	
+	if not hyper_spirit:
+		push_warning("[GameManager] Could not find Hyper evolution: %s" % result_id)
+		return false
+	
+	# Trigger evolution
+	var old_spirit: SpiritData = spirit_data
+	
+	# Replace in owned_spirits
+	var idx: int = owned_spirits.find(spirit_data)
+	if idx >= 0:
+		owned_spirits[idx] = hyper_spirit
+	
+	# Replace in grid if present
+	for i in grid_spirits.size():
+		if grid_spirits[i] == spirit_data:
+			grid_spirits[i] = hyper_spirit
+			break
+	
+	# Consume the item
+	spirit_data.held_item = null
+	
+	EventBus.hyper_evolution_triggered.emit(old_spirit, hyper_spirit)
+	print("[GameManager] HYPER EVOLUTION: %s -> %s" % [old_spirit.display_name, hyper_spirit.display_name])
+	return true
+
+
 
 ## Current wave number (legacy support)
 var current_wave: int = 0
@@ -571,9 +726,14 @@ func _on_starter_selected(spirit_data: Resource) -> void:
 func _on_battle_ended(result: Enums.BattleResult) -> void:
 	match result:
 		Enums.BattleResult.VICTORY:
+			# Award bench XP (base XP per battle, could be scaled by floor)
+			var battle_xp: int = 25  # Base XP per battle
+			if active_node:
+				battle_xp = 25 + (active_node.floor_number * 5)
+			award_bench_xp(battle_xp)
+			
 			# Victory handling (rewards, capture, node completion) 
 			# is now managed by main.gd through capture UI
-			pass
 		
 		Enums.BattleResult.DEFEAT, Enums.BattleResult.TIMEOUT:
 			EventBus.run_ended.emit(false)

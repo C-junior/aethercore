@@ -53,7 +53,7 @@ extends Resource
 
 
 # =============================================================================
-# EVOLUTION
+# EVOLUTION & XP
 # =============================================================================
 
 @export_group("Evolution")
@@ -63,6 +63,9 @@ extends Resource
 
 ## Reference to evolved form (null if cannot evolve)
 @export var evolves_into: SpiritData
+
+## Current XP towards next evolution (runtime, not saved to .tres)
+var current_xp: int = 0
 
 
 # =============================================================================
@@ -126,6 +129,62 @@ extends Resource
 
 
 # =============================================================================
+# EFFECTIVE STATS (includes item bonuses)
+# =============================================================================
+
+## Get effective HP (base + item bonus)
+func get_effective_hp() -> int:
+	var bonus: int = 0
+	if held_item:
+		var item: ItemData = held_item as ItemData
+		if item:
+			bonus = item.hp_bonus
+	return base_hp + bonus
+
+
+## Get effective attack (base + item bonus)
+func get_effective_attack() -> int:
+	var bonus: int = 0
+	if held_item:
+		var item: ItemData = held_item as ItemData
+		if item:
+			bonus = item.attack_bonus
+	return base_attack + bonus
+
+
+## Get effective speed (base * (1 + item bonus))
+func get_effective_speed() -> float:
+	var bonus: float = 0.0
+	if held_item:
+		var item: ItemData = held_item as ItemData
+		if item:
+			bonus = item.speed_bonus
+	return attack_speed * (1.0 + bonus)
+
+
+## Get XP progress as percentage (0.0 to 1.0)
+func get_xp_progress() -> float:
+	if xp_to_evolve <= 0:
+		return 1.0
+	return clampf(float(current_xp) / float(xp_to_evolve), 0.0, 1.0)
+
+
+## Add XP and check for evolution
+## @return: evolved SpiritData if evolution triggered, null otherwise
+func add_xp(amount: int) -> SpiritData:
+	current_xp += amount
+	
+	# Check for evolution
+	if evolves_into and current_xp >= xp_to_evolve:
+		var evolved := evolves_into.duplicate_spirit()
+		evolved.current_xp = current_xp - xp_to_evolve  # Carry over excess XP
+		evolved.held_item = held_item  # Transfer item
+		return evolved
+	
+	return null
+
+
+# =============================================================================
 # HELPERS
 # =============================================================================
 
@@ -152,7 +211,20 @@ func get_tier_string() -> String:
 	return ""
 
 
+## Get element emoji
+func get_element_emoji() -> String:
+	match element:
+		Enums.Element.FIRE: return "🔥"
+		Enums.Element.WATER: return "💧"
+		Enums.Element.EARTH: return "🪨"
+		Enums.Element.AIR: return "💨"
+		Enums.Element.NATURE: return "🌿"
+	return "⚪"
+
+
 ## Clone this spirit data (for instancing)
 func duplicate_spirit() -> SpiritData:
 	var copy: SpiritData = duplicate(true) as SpiritData
+	copy.current_xp = current_xp
 	return copy
+

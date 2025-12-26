@@ -14,6 +14,12 @@ signal spirit_selected(spirit_data: SpiritData)
 ## Emitted when spirit selection is cleared
 signal selection_cleared
 
+## Emitted when mouse hovers over a spirit
+signal spirit_hovered(spirit_data: SpiritData, screen_pos: Vector2)
+
+## Emitted when mouse leaves a spirit
+signal spirit_unhovered
+
 
 # =============================================================================
 # CONFIGURATION
@@ -42,6 +48,9 @@ var bench_slots: Array = []
 var selected_spirit: SpiritData = null
 var selected_slot_index: int = -1
 
+## Pending item to equip (from item inventory)
+var pending_item: ItemData = null
+
 
 # =============================================================================
 # INITIALIZATION
@@ -50,6 +59,10 @@ var selected_slot_index: int = -1
 func _ready() -> void:
 	_create_bench_slots()
 	visible = false
+	
+	# Connect to item selection events
+	EventBus.item_selected.connect(_on_item_selected)
+	EventBus.item_equipped.connect(_on_item_equipped)
 
 
 func _create_bench_slots() -> void:
@@ -109,9 +122,10 @@ func _create_slot(index: int) -> PanelContainer:
 	name_label.add_theme_font_size_override("font_size", 10)
 	vbox.add_child(name_label)
 	
-	# Make clickable for drag
+	# Make clickable and hoverable
 	panel.gui_input.connect(_on_slot_gui_input.bind(index))
 	panel.mouse_entered.connect(_on_slot_mouse_entered.bind(index))
+	panel.mouse_exited.connect(_on_slot_mouse_exited.bind(index))
 	
 	return panel
 
@@ -174,7 +188,13 @@ func _update_slot_visual(slot_index: int, spirit_data: SpiritData) -> void:
 		if portrait and spirit_data.portrait:
 			portrait.texture = spirit_data.portrait
 		if name_label:
-			name_label.text = spirit_data.display_name
+			# Show held item icon if present
+			var item_icon: String = ""
+			if spirit_data.held_item:
+				var item: ItemData = spirit_data.held_item as ItemData
+				if item:
+					item_icon = item.get_icon_emoji() + " "
+			name_label.text = item_icon + spirit_data.display_name
 	else:
 		if portrait:
 			portrait.texture = null
@@ -192,6 +212,11 @@ func _on_slot_gui_input(event: InputEvent, slot_index: int) -> void:
 		if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
 			var spirit: SpiritData = bench_slots[slot_index]
 			if spirit:
+				# If an item is pending, equip it to this spirit
+				if pending_item:
+					GameManager.equip_item_to_spirit(pending_item, spirit)
+					return
+				
 				# Toggle selection
 				if selected_spirit == spirit:
 					# Deselect
@@ -208,6 +233,22 @@ func _on_slot_mouse_entered(slot_index: int) -> void:
 		var style: StyleBoxFlat = slot.get_theme_stylebox("panel").duplicate()
 		style.border_color = Color(0.5, 0.5, 0.6, 1.0)
 		slot.add_theme_stylebox_override("panel", style)
+	
+	# Emit hover signal for spirit info UI
+	var spirit: SpiritData = bench_slots[slot_index] if slot_index < bench_slots.size() else null
+	if spirit:
+		var slot_node: PanelContainer = slots_container.get_child(slot_index)
+		var screen_pos: Vector2 = slot_node.global_position + slot_node.size / 2
+		spirit_hovered.emit(spirit, screen_pos)
+
+
+func _on_slot_mouse_exited(slot_index: int) -> void:
+	# Reset visual if not selected
+	if slot_index < slots_container.get_child_count() and slot_index != selected_slot_index:
+		_reset_slot_style(slot_index)
+	
+	# Emit unhover signal
+	spirit_unhovered.emit()
 
 
 ## Select a spirit for placement
@@ -297,4 +338,25 @@ func return_to_bench(spirit_data: SpiritData, from_grid_slot: int) -> void:
 	if from_grid_slot >= 0 and from_grid_slot < GameManager.grid_spirits.size():
 		GameManager.grid_spirits[from_grid_slot] = null
 	
+	update_bench()
+
+
+# =============================================================================
+# ITEM EQUIP HANDLERS
+# =============================================================================
+
+func _on_item_selected(item: Resource) -> void:
+	if item:
+		pending_item = item as ItemData
+		# Update title to show item equip mode
+		if title_label:
+			title_label.text = "🎒 Bench - Click spirit to equip: %s" % pending_item.display_name
+	else:
+		pending_item = null
+		update_bench()
+
+
+func _on_item_equipped(_item: Resource, _spirit: Resource) -> void:
+	# Clear pending item and refresh
+	pending_item = null
 	update_bench()

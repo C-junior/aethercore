@@ -198,3 +198,32 @@ signal node_completed(node: Resource, reward_spirit: Resource)
 ## @param spirit_data: The captured SpiritData
 signal spirit_captured(spirit_data: Resource)
 
+
+# =============================================================================
+# ITEM EVENTS
+# =============================================================================
+
+## Emitted when an item is equipped to a spirit
+## @param item: The ItemData equipped
+## @param spirit: The SpiritData receiving the item
+signal item_equipped(item: Resource, spirit: Resource)
+
+## Emitted when an item is selected for equipping
+## @param item: The ItemData selected (null if deselected)
+signal item_selected(item: Resource)
+
+
+# =============================================================================
+# BENCH & PASSIVE XP EVENTS
+# =============================================================================
+
+## Emitted when bench spirits receive passive XP
+## @param spirits: Array of SpiritData that received XP
+## @param xp_amount: XP awarded to each
+signal bench_xp_awarded(spirits: Array, xp_amount: int)
+
+## Emitted when a Hyper Evolution is triggered
+## @param old_spirit: The T3 spirit being evolved
+## @param new_spirit: The Hyper form result
+signal hyper_evolution_triggered(old_spirit: Resource, new_spirit: Resource)
+

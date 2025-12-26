@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dey2661g5bpqr"]
+[gd_scene load_steps=12 format=3 uid="uid://dey2661g5bpqr"]
 
 [ext_resource type="Script" uid="uid://bgwuou67gglhu" path="res://scripts/main.gd" id="1"]
 [ext_resource type="Script" uid="uid://blkry3skl274l" path="res://scripts/ui/shop_ui.gd" id="2"]
@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/map_ui.tscn" id="7"]
 [ext_resource type="Script" uid="uid://uryrs3ixllum" path="res://scripts/ui/capture_ui.gd" id="8"]
 [ext_resource type="Script" uid="uid://dn6evie5x6wsx" path="res://scripts/ui/bench_ui.gd" id="9"]
+[ext_resource type="PackedScene" uid="uid://cfujk3q0mhwdc" path="res://scenes/ui/item_inventory_ui.tscn" id="10_ya4ey"]
+[ext_resource type="PackedScene" uid="uid://bpk8wmj4n2yrq" path="res://scenes/ui/spirit_info_ui.tscn" id="11_eb6dy"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -327,3 +329,9 @@ offset_top = 30.0
 offset_right = 700.0
 offset_bottom = 100.0
 theme_override_constants/separation = 8
+
+[node name="ItemInventoryUI" parent="." instance=ExtResource("10_ya4ey")]
+anchors_preset = 0
+
+[node name="SpiritInfoUI" parent="." instance=ExtResource("11_eb6dy")]
+layout_mode = 0

@@ -27,8 +27,8 @@ static func calculate_damage(
 		"effectiveness_text": "normal"
 	}
 	
-	# Base damage
-	var base_damage: float = attacker_data.base_attack
+	# Base damage (includes item bonuses)
+	var base_damage: float = attacker_data.get_effective_attack()
 	
 	# Type effectiveness
 	var type_mult: float = Constants.get_type_multiplier(
@@ -166,8 +166,16 @@ static func can_evolve(spirit_data: SpiritData, current_xp: int) -> bool:
 # ATTACK SPEED CALCULATION
 # =============================================================================
 
-## Calculate attack interval from attack speed
+## Calculate attack interval from attack speed (includes item bonuses)
 static func get_attack_interval(attack_speed: float, haste_bonus: float = 0.0) -> float:
 	var effective_speed: float = attack_speed * (1.0 + haste_bonus)
 	effective_speed = maxf(0.1, effective_speed)  # Cap at 10 attacks/sec
 	return 1.0 / effective_speed
+
+
+## Calculate attack interval from spirit data (uses effective speed with item bonuses)
+static func get_spirit_attack_interval(spirit_data: SpiritData, haste_bonus: float = 0.0) -> float:
+	var effective_speed: float = spirit_data.get_effective_speed() * (1.0 + haste_bonus)
+	effective_speed = maxf(0.1, effective_speed)  # Cap at 10 attacks/sec
+	return 1.0 / effective_speed
+
