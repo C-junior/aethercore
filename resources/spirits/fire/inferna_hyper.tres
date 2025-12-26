@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/archer_awaken.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "inferna_hyper"
+display_name = "Inferna"
+description = "The ultimate flame incarnate. Her nine tails have merged into wings of celestial fire that scorches the heavens."
+portrait = ExtResource("2")
+element = 0
+tier = 4
+base_hp = 200
+base_attack = 45
+attack_speed = 1.3
+damage_reduction = 0
+xp_to_evolve = 999
+evolves_into = null
+ability_name = "Ragnarok Flame"
+ability_description = "Deals massive AOE damage to all enemies and applies Burn (5% max HP per second) for 5 seconds."
+ability_type = 3
+ability_params = {
+"cooldown": 8.0,
+"aoe_damage_percent": 1.5,
+"burn_duration": 5.0,
+"burn_percent": 0.05,
+"budget_value": 60.0
+}
+targeting_mode = 0
+is_ranged = true
+effect_color = Color(1, 0.3, 0, 1)
+animation_set = "fire_hyper"

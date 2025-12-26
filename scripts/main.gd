@@ -210,6 +210,9 @@ func _on_phase_changed(new_phase: Enums.GamePhase, _old_phase: Enums.GamePhase) 
 		Enums.GamePhase.CAMP:
 			_show_camp()
 		
+		Enums.GamePhase.EVENT:
+			_show_event()
+		
 		Enums.GamePhase.BOSS_INTRO:
 			_show_boss_intro()
 		
@@ -310,6 +313,27 @@ func _show_camp() -> void:
 		camp_ui.show_camp()
 
 
+func _show_event() -> void:
+	if starter_selection:
+		starter_selection.visible = false
+	if map_ui:
+		map_ui.visible = false
+	if battle_scene:
+		battle_scene.visible = false
+	if game_over_screen:
+		game_over_screen.visible = false
+	if shop_ui:
+		shop_ui.visible = false
+	if synergy_ui:
+		synergy_ui.hide_panel()
+	if bench_ui:
+		bench_ui.hide_bench()
+	
+	# Show event UI with random event
+	if event_ui:
+		event_ui.show_random_event()
+
+
 func _on_camp_completed() -> void:
 	# Camp action completed, return to map
 	if GameManager.active_node:
@@ -325,16 +349,171 @@ func _on_event_completed() -> void:
 
 
 func _show_boss_intro() -> void:
-	# TODO: Implement boss intro sequence
-	# For now, skip to preparation
-	await get_tree().create_timer(0.5).timeout
+	# Hide other UI
+	if starter_selection:
+		starter_selection.visible = false
+	if map_ui:
+		map_ui.visible = false
+	if shop_ui:
+		shop_ui.visible = false
+	if synergy_ui:
+		synergy_ui.hide_panel()
+	if bench_ui:
+		bench_ui.hide_bench()
+	if battle_scene:
+		battle_scene.visible = true
+	
+	# Create dramatic overlay
+	var overlay := ColorRect.new()
+	overlay.name = "BossIntroOverlay"
+	overlay.color = Color(0, 0, 0, 0.85)
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.z_index = 100
+	add_child(overlay)
+	
+	var vbox := VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_CENTER)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	overlay.add_child(vbox)
+	
+	# Warning icon
+	var warning_label := Label.new()
+	warning_label.text = "⚠️"
+	warning_label.add_theme_font_size_override("font_size", 64)
+	warning_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(warning_label)
+	
+	# Boss title
+	var title_label := Label.new()
+	title_label.text = "BOSS BATTLE"
+	title_label.add_theme_font_size_override("font_size", 48)
+	title_label.add_theme_color_override("font_color", Color(1, 0.2, 0.2))
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title_label)
+	
+	# Boss name
+	var boss_name := _get_current_boss_name()
+	var name_label := Label.new()
+	name_label.text = boss_name
+	name_label.add_theme_font_size_override("font_size", 32)
+	name_label.add_theme_color_override("font_color", Color(1, 0.8, 0.3))
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(name_label)
+	
+	# Animate entrance
+	overlay.modulate.a = 0.0
+	var tween := create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.5)
+	
+	# Wait for dramatic effect
+	await get_tree().create_timer(2.5).timeout
+	
+	# Fade out
+	var exit_tween := create_tween()
+	exit_tween.tween_property(overlay, "modulate:a", 0.0, 0.5)
+	await exit_tween.finished
+	
+	overlay.queue_free()
 	GameManager.current_phase = Enums.GamePhase.PREPARATION
 
 
+func _get_current_boss_name() -> String:
+	if GameManager.active_node:
+		var wave_data: WaveData = GameManager.get_current_wave_data() as WaveData
+		if wave_data and wave_data.enemies.size() > 0:
+			var boss_spirit: SpiritData = wave_data.enemies[0] as SpiritData
+			if boss_spirit:
+				return boss_spirit.display_name
+	
+	match GameManager.current_act:
+		1: return "Queenstruction"
+		2: return "Gnocking"
+		3: return "The Aether Core"
+	return "Unknown Boss"
+
+
 func _show_act_complete() -> void:
-	# TODO: Implement act complete screen with rewards
-	# For now, auto-proceed to next act
-	await get_tree().create_timer(2.0).timeout
+	# Hide other UI
+	if map_ui:
+		map_ui.visible = false
+	if battle_scene:
+		battle_scene.visible = false
+	if shop_ui:
+		shop_ui.visible = false
+	if synergy_ui:
+		synergy_ui.hide_panel()
+	if bench_ui:
+		bench_ui.hide_bench()
+	
+	# Create celebration overlay
+	var overlay := ColorRect.new()
+	overlay.name = "ActCompleteOverlay"
+	overlay.color = Color(0.05, 0.08, 0.15, 0.95)
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.z_index = 100
+	add_child(overlay)
+	
+	var vbox := VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_CENTER)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 20)
+	overlay.add_child(vbox)
+	
+	# Victory icon
+	var icon_label := Label.new()
+	icon_label.text = "🏆"
+	icon_label.add_theme_font_size_override("font_size", 72)
+	icon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(icon_label)
+	
+	# Act complete title
+	var title_label := Label.new()
+	title_label.text = "ACT %d COMPLETE!" % GameManager.current_act
+	title_label.add_theme_font_size_override("font_size", 42)
+	title_label.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title_label)
+	
+	# Rewards section
+	var rewards_container := VBoxContainer.new()
+	rewards_container.add_theme_constant_override("separation", 8)
+	vbox.add_child(rewards_container)
+	
+	var essence_reward: int = 25 * GameManager.current_act
+	var gold_bonus: int = 50 * GameManager.current_act
+	
+	var essence_label := Label.new()
+	essence_label.text = "✨ +%d Aether Essence" % essence_reward
+	essence_label.add_theme_font_size_override("font_size", 24)
+	essence_label.add_theme_color_override("font_color", Color(0.6, 0.8, 1))
+	essence_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	rewards_container.add_child(essence_label)
+	
+	var gold_label := Label.new()
+	gold_label.text = "💰 +%d Gold Bonus" % gold_bonus
+	gold_label.add_theme_font_size_override("font_size", 24)
+	gold_label.add_theme_color_override("font_color", Color(1, 0.9, 0.4))
+	gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	rewards_container.add_child(gold_label)
+	
+	# Apply rewards
+	GameManager.aether_essence += essence_reward
+	GameManager.gold += gold_bonus
+	
+	# Animate entrance
+	overlay.modulate.a = 0.0
+	var tween := create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.5)
+	
+	# Wait for player to see rewards
+	await get_tree().create_timer(3.5).timeout
+	
+	# Fade out
+	var exit_tween := create_tween()
+	exit_tween.tween_property(overlay, "modulate:a", 0.0, 0.5)
+	await exit_tween.finished
+	
+	overlay.queue_free()
 	GameManager.proceed_to_next_act()
 
 

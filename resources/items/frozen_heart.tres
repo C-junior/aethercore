@@ -4,13 +4,13 @@
 
 [resource]
 script = ExtResource("1")
-id = "eternal_flame"
-display_name = "Eternal Flame"
-description = "A mystical fire that triggers Hyper Evolution in fire spirits. Legend says it burns forever."
+id = "frozen_heart"
+display_name = "Frozen Heart"
+description = "An ice crystal containing the essence of ancient glaciers. Triggers Hyper Evolution in water spirits."
 type = 1
 hp_bonus = 0
 attack_bonus = 0
 speed_bonus = 0.0
-evolves_spirit_id = "kyuubi_t3"
-evolution_result_id = "inferna_hyper"
+evolves_spirit_id = "megalana_t3"
+evolution_result_id = "leviathan_hyper"
 buy_price = 50

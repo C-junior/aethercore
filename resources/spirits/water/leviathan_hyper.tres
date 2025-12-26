@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/archer_awaken.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "leviathan_hyper"
+display_name = "Leviathan"
+description = "Ancient sea serpent awakened from abyss slumber. Commands tidal forces that reshape continents."
+portrait = ExtResource("2")
+element = 1
+tier = 4
+base_hp = 280
+base_attack = 35
+attack_speed = 0.9
+damage_reduction = 5
+xp_to_evolve = 999
+evolves_into = null
+ability_name = "Abyssal Tsunami"
+ability_description = "Deals AOE damage and heals all allies for 30% of damage dealt. Pushes enemies to back row."
+ability_type = 3
+ability_params = {
+"cooldown": 10.0,
+"aoe_damage_percent": 1.2,
+"lifesteal_to_team": 0.30,
+"pushback": true,
+"budget_value": 55.0
+}
+targeting_mode = 0
+is_ranged = true
+effect_color = Color(0.2, 0.4, 1, 1)
+animation_set = "water_hyper"

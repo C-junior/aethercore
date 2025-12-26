@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="SpiritData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spirit_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/classes/archer_awaken.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "goliath_hyper"
+display_name = "Goliath"
+description = "Mountain given form. This titanic guardian's footsteps cause earthquakes and shields allies with stone armor."
+portrait = ExtResource("2")
+element = 2
+tier = 4
+base_hp = 400
+base_attack = 25
+attack_speed = 0.6
+damage_reduction = 15
+xp_to_evolve = 999
+evolves_into = null
+ability_name = "Titan's Bulwark"
+ability_description = "Grants all allies 40% max HP shield and taunts all enemies for 4 seconds."
+ability_type = 4
+ability_params = {
+"shield_percent": 0.40,
+"taunt_duration": 4.0,
+"affects_all_allies": true,
+"budget_value": 50.0
+}
+targeting_mode = 0
+is_ranged = false
+effect_color = Color(0.6, 0.4, 0.2, 1)
+animation_set = "earth_hyper"
