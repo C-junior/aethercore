@@ -30,8 +30,8 @@ signal selection_cleared
 # NODE REFERENCES
 # =============================================================================
 
-@onready var title_label: Label = $TitleLabel
-@onready var slots_container: HBoxContainer = $SlotsContainer
+@onready var title_label: Label = %TitleLabel
+@onready var slots_container: HBoxContainer = %SlotsContainer
 
 
 # =============================================================================
