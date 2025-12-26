@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EventData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/event_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "mysterious_chest"
+title = "Mysterious Chest"
+description = "You stumble upon an ornate chest covered in ancient runes. It pulses with an eerie glow. Do you dare to open it?"
+icon = "📦"
+choices = [
+	{
+		"text": "💰 Open carefully (Safe)",
+		"outcome_text": "You carefully pry open the chest and find some gold coins inside.",
+		"effects": {
+			"gold": 25
+		}
+	},
+	{
+		"text": "⚡ Force it open (Risky)",
+		"outcome_text": "You smash the lock! The chest explodes with treasures... and a curse that wounds your spirits.",
+		"effects": {
+			"gold": 75,
+			"damage_percent": 0.30
+		}
+	},
+	{
+		"text": "🚶 Walk away",
+		"outcome_text": "Some mysteries are best left unsolved. You continue on your journey.",
+		"effects": {}
+	}
+]
+min_act = 1
+max_act = 3
+weight = 1.0
+one_time = false

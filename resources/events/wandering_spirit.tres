@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EventData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/event_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "wandering_spirit"
+title = "Lost Spirit"
+description = "A small, injured spirit approaches you timidly. It seems to have lost its way and has no one to care for it. Will you help?"
+icon = "👻"
+choices = [
+	{
+		"text": "💚 Take it in (Recruit)",
+		"outcome_text": "The spirit joins your party gratefully! It will need time to recover but is eager to help.",
+		"effects": {
+			"spirit_element": 5
+		}
+	},
+	{
+		"text": "💰 Offer it gold for directions",
+		"outcome_text": "The spirit accepts your offering and points you toward a hidden cache before departing.",
+		"effects": {
+			"gold": -10,
+			"xp": 30
+		}
+	},
+	{
+		"text": "🚶 Ignore it",
+		"outcome_text": "You have no room for strays. The spirit fades into the mist.",
+		"effects": {}
+	}
+]
+min_act = 1
+max_act = 2
+weight = 0.8
+one_time = false

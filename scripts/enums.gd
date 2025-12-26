@@ -75,6 +75,7 @@ enum GamePhase {
 	CAPTURE_SELECTION,  ## Choose defeated spirit to purify/capture
 	SHOP,               ## At shop node
 	CAMP,               ## At camp/rest node
+	EVENT,              ## Random event encounter
 	BOSS_INTRO,         ## Boss encounter intro
 	GAME_OVER,          ## Run ended (win or lose)
 	ACT_COMPLETE,       ## Beat act boss, transition to next

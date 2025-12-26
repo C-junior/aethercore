@@ -260,8 +260,8 @@ func _enter_node(node: MapNode) -> void:
 			_complete_node(node)
 		
 		MapNode.NodeType.EVENT:
-			# TODO: Event system
-			_complete_node(node)
+			# Show event UI
+			current_phase = Enums.GamePhase.EVENT
 
 
 ## Complete current node and return to map
@@ -436,17 +436,34 @@ func place_spirit_on_grid(spirit_data: Resource, slot_index: int) -> bool:
 	if slot_index < 0 or slot_index >= Constants.GRID_TOTAL_SLOTS:
 		return false
 	
-	# If slot is occupied, swap
+	# Track what was in the slot before
 	var existing: Resource = grid_spirits[slot_index]
+	var previous_slot: int = -1
+	
+	# Find if the spirit was already on grid elsewhere
+	for i in grid_spirits.size():
+		if grid_spirits[i] == spirit_data and i != slot_index:
+			previous_slot = i
+			break
+	
+	# Place the spirit
 	grid_spirits[slot_index] = spirit_data
 	
+	# Handle swap if slot was occupied
 	if existing and existing != spirit_data:
-		# Find where the new spirit was and put the old one there
-		for i in grid_spirits.size():
-			if grid_spirits[i] == spirit_data and i != slot_index:
-				grid_spirits[i] = existing
-				break
+		if previous_slot >= 0:
+			# Swap: put old spirit where new one was
+			grid_spirits[previous_slot] = existing
+		else:
+			# Existing spirit was displaced, emit removal
+			EventBus.spirit_removed.emit(existing, slot_index)
+	elif previous_slot >= 0:
+		# Spirit moved from another slot
+		grid_spirits[previous_slot] = null
+		EventBus.spirit_removed.emit(spirit_data, previous_slot)
 	
+	# Emit placement signal for synergy tracking
+	EventBus.spirit_placed.emit(spirit_data, slot_index)
 	EventBus.auras_recalculate_requested.emit()
 	return true
 
@@ -455,7 +472,11 @@ func place_spirit_on_grid(spirit_data: Resource, slot_index: int) -> bool:
 ## @param slot_index: Grid slot to clear
 func remove_spirit_from_grid(slot_index: int) -> void:
 	if slot_index >= 0 and slot_index < Constants.GRID_TOTAL_SLOTS:
+		var removed_spirit: Resource = grid_spirits[slot_index]
 		grid_spirits[slot_index] = null
+		
+		if removed_spirit:
+			EventBus.spirit_removed.emit(removed_spirit, slot_index)
 		EventBus.auras_recalculate_requested.emit()
 
 

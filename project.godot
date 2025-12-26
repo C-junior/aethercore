@@ -22,6 +22,7 @@ Enums="*res://scripts/enums.gd"
 Constants="*res://scripts/constants.gd"
 EventBus="*res://autoload/event_bus.gd"
 GameManager="*res://autoload/game_manager.gd"
+SynergyManager="*res://autoload/synergy_manager.gd"
 
 [input]
 

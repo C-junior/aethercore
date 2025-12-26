@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dey2661g5bpqr"]
+[gd_scene load_steps=15 format=3 uid="uid://dey2661g5bpqr"]
 
 [ext_resource type="Script" uid="uid://bgwuou67gglhu" path="res://scripts/main.gd" id="1"]
 [ext_resource type="Script" uid="uid://blkry3skl274l" path="res://scripts/ui/shop_ui.gd" id="2"]
@@ -11,6 +11,9 @@
 [ext_resource type="Script" uid="uid://dn6evie5x6wsx" path="res://scripts/ui/bench_ui.gd" id="9"]
 [ext_resource type="PackedScene" uid="uid://cfujk3q0mhwdc" path="res://scenes/ui/item_inventory_ui.tscn" id="10_ya4ey"]
 [ext_resource type="PackedScene" uid="uid://bpk8wmj4n2yrq" path="res://scenes/ui/spirit_info_ui.tscn" id="11_eb6dy"]
+[ext_resource type="Script" uid="uid://cyvjct7qwygkh" path="res://scripts/ui/synergy_ui.gd" id="12_synergy"]
+[ext_resource type="Script" uid="uid://cwvsjbjnde12q" path="res://scripts/ui/camp_ui.gd" id="13_camp"]
+[ext_resource type="Script" uid="uid://dg7g585suq8m" path="res://scripts/ui/event_ui.gd" id="14_event"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -337,3 +340,30 @@ anchors_preset = 0
 
 [node name="SpiritInfoUI" parent="." instance=ExtResource("11_eb6dy")]
 layout_mode = 0
+
+[node name="SynergyUI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 300.0
+script = ExtResource("12_synergy")
+
+[node name="CampUI" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("13_camp")
+
+[node name="EventUI" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("14_event")

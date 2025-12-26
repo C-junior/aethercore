@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="EventData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/event_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "dark_shrine"
+title = "Dark Shrine"
+description = "A foreboding shrine stands before you, its altar stained with ancient offerings. A dark presence whispers promises of power in exchange for sacrifice."
+icon = "⛩️"
+choices = [
+	{
+		"text": "🔥 Offer your gold",
+		"outcome_text": "The shrine accepts your material offering. Your spirits feel a surge of energy!",
+		"effects": {
+			"gold": -30,
+			"xp": 75
+		}
+	},
+	{
+		"text": "💀 Sacrifice a spirit",
+		"outcome_text": "The shrine consumes one of your spirits. In return, immense power flows to the survivors.",
+		"effects": {
+			"remove_spirit": true,
+			"xp": 150,
+			"gold": 50
+		}
+	},
+	{
+		"text": "🙏 Pray without offering",
+		"outcome_text": "You pray respectfully. The shrine grants a small blessing for your faith.",
+		"effects": {
+			"heal_percent": 0.25
+		}
+	}
+]
+min_act = 2
+max_act = 3
+weight = 0.6
+one_time = true

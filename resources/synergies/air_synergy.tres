@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="SynergyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/synergy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+element = 3
+display_name = "Zephyr's Grace"
+description = "Air spirits move with supernatural speed, attacking faster and eventually striking first."
+icon_emoji = "💨"
+tier_thresholds = [2, 3, 4]
+t1_attack_percent = 0.0
+t1_hp_percent = 0.0
+t1_speed_percent = 0.10
+t1_ability_percent = 0.0
+t1_damage_reduction = 0.0
+t2_attack_percent = 0.0
+t2_hp_percent = 0.0
+t2_speed_percent = 0.20
+t2_ability_percent = 0.10
+t2_damage_reduction = 0.0
+t3_attack_percent = 0.10
+t3_hp_percent = 0.0
+t3_speed_percent = 0.30
+t3_ability_percent = 0.15
+t3_damage_reduction = 0.0
+t3_special_effect = "first_strike"

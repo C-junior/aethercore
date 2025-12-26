@@ -17,6 +17,9 @@ extends Control
 @onready var bench_ui: Control = $BenchUI
 @onready var spirit_info_ui: SpiritInfoUI = $SpiritInfoUI
 @onready var item_inventory_ui: ItemInventoryUI = $ItemInventoryUI
+@onready var synergy_ui: SynergyUI = $SynergyUI
+@onready var camp_ui: CampUI = $CampUI
+@onready var event_ui: EventUI = $EventUI
 
 
 # =============================================================================
@@ -70,6 +73,14 @@ func _connect_signals() -> void:
 	if bench_ui:
 		bench_ui.spirit_selected.connect(_on_bench_spirit_selected)
 	# Note: spirit_hovered/unhovered are routed through EventBus globally
+	
+	# Connect camp UI signals
+	if camp_ui:
+		camp_ui.camp_completed.connect(_on_camp_completed)
+	
+	# Connect event UI signals
+	if event_ui:
+		event_ui.event_completed.connect(_on_event_completed)
 	
 	# Connect ally grid signals for placement
 	if ally_grid:
@@ -220,6 +231,8 @@ func _show_map_selection() -> void:
 		battle_scene.visible = false
 	if bench_ui:
 		bench_ui.hide_bench()
+	if synergy_ui:
+		synergy_ui.hide_panel()
 	
 	# Show the map
 	if map_ui and GameManager.current_map.size() > 0:
@@ -243,6 +256,10 @@ func _show_preparation() -> void:
 	if bench_ui:
 		bench_ui.show_bench()
 	
+	# Show synergy UI during preparation
+	if synergy_ui:
+		synergy_ui.show_panel()
+	
 	if battle_scene:
 		battle_scene.visible = true
 		# Spawn allies from grid
@@ -254,6 +271,9 @@ func _show_battle() -> void:
 		shop_ui.visible = false
 	if bench_ui:
 		bench_ui.hide_bench()
+	# Keep synergy UI visible during battle
+	if synergy_ui:
+		synergy_ui.show_panel()
 
 
 func _show_shop_only() -> void:
@@ -282,13 +302,24 @@ func _show_camp() -> void:
 		game_over_screen.visible = false
 	if shop_ui:
 		shop_ui.visible = false
+	if synergy_ui:
+		synergy_ui.hide_panel()
 	
-	# TODO: Implement camp UI
-	# For now, heal all spirits and return to map
-	_heal_all_spirits()
-	
-	# Auto-complete camp node
-	await get_tree().create_timer(1.0).timeout
+	# Show the camp UI
+	if camp_ui:
+		camp_ui.show_camp()
+
+
+func _on_camp_completed() -> void:
+	# Camp action completed, return to map
+	if GameManager.active_node:
+		GameManager._complete_node(GameManager.active_node)
+
+
+func _on_event_completed() -> void:
+	# Event completed, return to map
+	if event_ui:
+		event_ui.visible = false
 	if GameManager.active_node:
 		GameManager._complete_node(GameManager.active_node)
 

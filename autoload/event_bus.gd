@@ -239,3 +239,18 @@ signal spirit_hovered(spirit_data: Resource, screen_pos: Vector2)
 
 ## Emitted when mouse leaves a spirit
 signal spirit_unhovered
+
+
+# =============================================================================
+# GRID MANAGEMENT EVENTS
+# =============================================================================
+
+## Emitted when a spirit is placed on the battle grid
+## @param spirit_data: The SpiritData placed
+## @param slot_index: Grid slot index (0-3)
+signal spirit_placed(spirit_data: Resource, slot_index: int)
+
+## Emitted when a spirit is removed from the battle grid
+## @param spirit_data: The SpiritData removed
+## @param slot_index: Grid slot index it was removed from
+signal spirit_removed(spirit_data: Resource, slot_index: int)
