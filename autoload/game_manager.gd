@@ -14,6 +14,9 @@ var gold: int = Constants.STARTING_GOLD:
 		gold = max(0, value)
 		EventBus.gold_changed.emit(gold, delta)
 
+## Aether Essence - meta-progression currency (persists across runs)
+var aether_essence: int = 0
+
 ## Current act number (1-3)
 var current_act: int = 1
 
@@ -577,14 +580,27 @@ func award_bench_xp(battle_xp: int) -> void:
 
 ## Apply XP to a spirit and check for evolution
 func _apply_xp_to_spirit(spirit: SpiritData, xp: int) -> void:
-	# Check if spirit can evolve normally
-	if spirit.evolves_into and spirit.xp_to_evolve > 0:
-		# Track XP (we'll need to add a current_xp property or use a dictionary)
-		# For now, we'll check if accumulated XP triggers evolution
-		pass  # TODO: Track spirit XP properly
+	# Use the spirit's built-in add_xp method
+	var evolved: SpiritData = spirit.add_xp(xp)
 	
-	# Check for Hyper Evolution
-	check_hyper_evolution(spirit)
+	if evolved:
+		# Spirit evolved! Replace in owned_spirits
+		var idx: int = owned_spirits.find(spirit)
+		if idx >= 0:
+			owned_spirits[idx] = evolved
+		
+		# Replace in grid if present
+		for i in grid_spirits.size():
+			if grid_spirits[i] == spirit:
+				grid_spirits[i] = evolved
+				break
+		
+		EventBus.spirit_evolved.emit(spirit, evolved)
+		print("[GameManager] EVOLUTION: %s -> %s" % [spirit.display_name, evolved.display_name])
+	
+	# Check for Hyper Evolution (for T3 spirits with evolution items)
+	var current_spirit: SpiritData = evolved if evolved else spirit
+	check_hyper_evolution(current_spirit)
 
 
 # =============================================================================
@@ -766,10 +782,19 @@ func _on_starter_selected(spirit_data: Resource) -> void:
 func _on_battle_ended(result: Enums.BattleResult) -> void:
 	match result:
 		Enums.BattleResult.VICTORY:
-			# Award bench XP (base XP per battle, could be scaled by floor)
+			# Calculate XP based on floor
 			var battle_xp: int = 25  # Base XP per battle
 			if active_node:
 				battle_xp = 25 + (active_node.floor_number * 5)
+			
+			# Award full XP to grid spirits (active fighters)
+			for spirit in grid_spirits:
+				if spirit:
+					var spirit_data: SpiritData = spirit as SpiritData
+					if spirit_data:
+						_apply_xp_to_spirit(spirit_data, battle_xp)
+			
+			# Award 50% XP to bench spirits
 			award_bench_xp(battle_xp)
 			
 			# Victory handling (rewards, capture, node completion) 

@@ -66,10 +66,9 @@ signal status_removed(spirit: Node, effect: Enums.StatusEffect)
 signal xp_gained(spirit: Node, amount: int, new_total: int)
 
 ## Emitted when a spirit evolves
-## @param spirit: The Spirit that evolved
-## @param old_tier: Previous tier
-## @param new_tier: New tier
-signal spirit_evolved(spirit: Node, old_tier: Enums.Tier, new_tier: Enums.Tier)
+## @param old_spirit: The SpiritData before evolution
+## @param new_spirit: The SpiritData after evolution
+signal spirit_evolved(old_spirit: Resource, new_spirit: Resource)
 
 
 # =============================================================================
