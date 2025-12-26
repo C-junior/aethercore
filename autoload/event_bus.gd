@@ -227,3 +227,15 @@ signal bench_xp_awarded(spirits: Array, xp_amount: int)
 ## @param new_spirit: The Hyper form result
 signal hyper_evolution_triggered(old_spirit: Resource, new_spirit: Resource)
 
+
+# =============================================================================
+# SPIRIT HOVER EVENTS
+# =============================================================================
+
+## Emitted when mouse hovers over a spirit (bench or grid)
+## @param spirit_data: The SpiritData being hovered
+## @param screen_pos: Screen position for tooltip placement
+signal spirit_hovered(spirit_data: Resource, screen_pos: Vector2)
+
+## Emitted when mouse leaves a spirit
+signal spirit_unhovered

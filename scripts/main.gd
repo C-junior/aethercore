@@ -69,12 +69,15 @@ func _connect_signals() -> void:
 	# Connect bench UI signals
 	if bench_ui:
 		bench_ui.spirit_selected.connect(_on_bench_spirit_selected)
-		bench_ui.spirit_hovered.connect(_on_spirit_hovered)
-		bench_ui.spirit_unhovered.connect(_on_spirit_unhovered)
+	# Note: spirit_hovered/unhovered are routed through EventBus globally
 	
 	# Connect ally grid signals for placement
 	if ally_grid:
 		ally_grid.spirit_placed.connect(_on_ally_grid_spirit_placed)
+	
+	# Connect global spirit hover events (from grid spirits via EventBus)
+	EventBus.spirit_hovered.connect(_on_spirit_hovered)
+	EventBus.spirit_unhovered.connect(_on_spirit_unhovered)
 
 
 # =============================================================================

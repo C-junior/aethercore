@@ -134,8 +134,27 @@ func start_new_run() -> void:
 	current_node_id = ""
 	active_node = null
 	
+	# Give starter items for testing
+	item_inventory.clear()
+	_add_starter_items()
+	
 	_generate_starter_options()
 	current_phase = Enums.GamePhase.STARTER_SELECTION
+
+
+## Add starter items to inventory
+func _add_starter_items() -> void:
+	var starter_items: Array[String] = [
+		"res://resources/items/iron_sword.tres",
+		"res://resources/items/health_charm.tres"
+	]
+	
+	for item_path in starter_items:
+		if ResourceLoader.exists(item_path):
+			var item: Resource = load(item_path)
+			if item:
+				item_inventory.append(item)
+				print("[GameManager] Added starter item: %s" % item.get("display_name"))
 
 
 ## Start a specific act

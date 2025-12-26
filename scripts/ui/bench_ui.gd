@@ -240,6 +240,7 @@ func _on_slot_mouse_entered(slot_index: int) -> void:
 		var slot_node: PanelContainer = slots_container.get_child(slot_index)
 		var screen_pos: Vector2 = slot_node.global_position + slot_node.size / 2
 		spirit_hovered.emit(spirit, screen_pos)
+		EventBus.spirit_hovered.emit(spirit, screen_pos)
 
 
 func _on_slot_mouse_exited(slot_index: int) -> void:
@@ -249,6 +250,7 @@ func _on_slot_mouse_exited(slot_index: int) -> void:
 	
 	# Emit unhover signal
 	spirit_unhovered.emit()
+	EventBus.spirit_unhovered.emit()
 
 
 ## Select a spirit for placement

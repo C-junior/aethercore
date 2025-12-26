@@ -13,6 +13,8 @@ signal evolved(new_tier: Enums.Tier)
 signal attack_performed(target: Spirit, damage: int)
 signal ability_triggered(ability_name: String)
 signal status_changed(effect: Enums.StatusEffect, active: bool)
+signal hovered(spirit_data: SpiritData, screen_pos: Vector2)
+signal unhovered
 
 
 # =============================================================================
@@ -98,6 +100,9 @@ var haste_bonus: float = 0.0
 func _ready() -> void:
 	if spirit_data:
 		_initialize_from_data()
+	
+	# Setup mouse detection
+	_setup_hover_detection()
 
 
 func _initialize_from_data() -> void:
@@ -597,3 +602,73 @@ func _play_evolution_effect() -> void:
 	var scale_tween: Tween = create_tween()
 	scale_tween.tween_property(self, "scale", Vector2(1.3, 1.3), 0.15)
 	scale_tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)
+
+
+# =============================================================================
+# HOVER DETECTION
+# =============================================================================
+
+func _setup_hover_detection() -> void:
+	# Try to use existing HitArea first (from spirit.tscn)
+	var hover_area: Area2D = get_node_or_null("HitArea")
+	
+	if hover_area:
+		# Enable mouse detection on existing area
+		hover_area.input_pickable = true
+		hover_area.mouse_entered.connect(_on_mouse_entered)
+		hover_area.mouse_exited.connect(_on_mouse_exited)
+		print("[Spirit] Hover detection enabled on HitArea for: %s" % (spirit_data.display_name if spirit_data else "unknown"))
+		return
+	
+	# Fallback: Check for dedicated HoverArea
+	hover_area = get_node_or_null("HoverArea")
+	if hover_area:
+		hover_area.input_pickable = true
+		hover_area.mouse_entered.connect(_on_mouse_entered)
+		hover_area.mouse_exited.connect(_on_mouse_exited)
+		return
+	
+	# Last resort: Create hover detection area dynamically
+	hover_area = Area2D.new()
+	hover_area.name = "HoverArea"
+	hover_area.input_pickable = true
+	hover_area.monitorable = false
+	hover_area.monitoring = false
+	hover_area.collision_layer = 0
+	hover_area.collision_mask = 0
+	
+	var collision_shape := CollisionShape2D.new()
+	collision_shape.name = "CollisionShape"
+	
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(80, 80)
+	collision_shape.shape = shape
+	
+	hover_area.add_child(collision_shape)
+	add_child(hover_area)
+	
+	# Connect signals
+	hover_area.mouse_entered.connect(_on_mouse_entered)
+	hover_area.mouse_exited.connect(_on_mouse_exited)
+
+
+func _on_mouse_entered() -> void:
+	if not spirit_data:
+		return
+	
+	# Don't show hover during battle phase
+	if GameManager.current_phase == Enums.GamePhase.BATTLE:
+		return
+	
+	# Only show for ally spirits during preparation
+	if is_enemy:
+		return
+	
+	var screen_pos: Vector2 = global_position + Vector2(50, 0)
+	hovered.emit(spirit_data, screen_pos)
+	EventBus.spirit_hovered.emit(spirit_data, screen_pos)
+
+
+func _on_mouse_exited() -> void:
+	unhovered.emit()
+	EventBus.spirit_unhovered.emit()
